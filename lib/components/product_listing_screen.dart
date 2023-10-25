@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:smallproject/api/products.dart';
+import 'package:badges/badges.dart' as badges;
+import 'package:smallproject/components/orders_screen.dart';
 
 void main() {
   runApp(Products());
@@ -27,6 +29,9 @@ class ProductListingScreen extends StatefulWidget {
 }
 
 class _ProductListingScreenState extends State<ProductListingScreen> {
+  Map<String, int> cart = {};
+  int totalCartItems = 0;
+  Map<String, double> totalPrices = {};
   List<Product> productlist = [];
 
   @override
@@ -47,17 +52,100 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
     });
   }
 
+  void updateTotalCartItems() {
+    int total = 0;
+    cart.forEach((product, quantity) {
+      total += quantity;
+    });
+    setState(() {
+      totalCartItems = total;
+    });
+  }
+
+  void addToCart(String product) {
+    setState(() {
+      if (cart.containsKey(product)) {
+        cart[product] = (cart[product] ?? 0) + 1;
+        totalPrices[product] = (totalPrices[product] ?? 0) +
+            productlist.firstWhere((p) => p.name == product).price;
+      } else {
+        cart[product] = 1;
+        totalPrices[product] =
+            productlist.firstWhere((p) => p.name == product).price;
+      }
+      updateTotalCartItems(); // Update the total cart items
+    });
+  }
+
+  void deductToCart(String product) {
+    setState(() {
+      if (cart.containsKey(product)) {
+        final currentQuantity = cart[product] ?? 0;
+        if (currentQuantity > 1) {
+          cart[product] = currentQuantity - 1;
+          totalPrices[product] = (totalPrices[product] ?? 0) -
+              (productlist.firstWhere((p) => p.name == product).price);
+        } else {
+          cart.remove(product);
+          totalPrices.remove(product);
+        }
+        updateTotalCartItems(); // Update the total cart items
+      }
+    });
+  }
+
+  void removeToCart(String product) {
+    setState(() {
+      if (cart.containsKey(product)) {
+        cart.remove(product);
+        totalPrices.remove(product);
+        updateTotalCartItems(); // Update the total cart items
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Product Listing'),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.shopping_cart),
-            onPressed: () {
-              // Navigate to the shopping cart screen
-            },
+        actions: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: badges.Badge(
+                  badgeContent: Text(totalCartItems.toString(),
+                      style: const TextStyle(color: Colors.white)),
+                  position: badges.BadgePosition.topEnd(top: -10, end: 0),
+                  badgeStyle: badges.BadgeStyle(
+                    shape: badges.BadgeShape.circle,
+                    badgeColor: const Color.fromARGB(255, 226, 48, 48),
+                    padding: const EdgeInsets.all(5),
+                    borderRadius: BorderRadius.circular(4),
+                    elevation: 0,
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.shopping_cart),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => OrderScreen(
+                            cart: cart,
+                            deductToCart: deductToCart,
+                            products: productlist,
+                            addToCart: addToCart,
+                            removeToCart: removeToCart,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -86,6 +174,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                   ElevatedButton(
                     onPressed: () {
                       // Handle the Add to Cart button action
+                      addToCart(productlist[index].name);
                     },
                     child: const Text('Add to Cart'),
                   ),

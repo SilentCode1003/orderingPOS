@@ -140,7 +140,7 @@ class DashboardScreen extends StatelessWidget {
                     },
                   ),
                   DashboardItem(
-                    title: 'Cart',
+                    title: 'Orders',
                     icon: Icons.assignment,
                     onTap: () {
                       Navigator.pushNamed(context, '/orders');
