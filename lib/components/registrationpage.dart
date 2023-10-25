@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:smallproject/api/customer.dart';
 
 class RegistrationPage extends StatefulWidget {
   RegistrationPage({Key? key}) : super(key: key);
@@ -15,9 +18,27 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController contactNumberController = TextEditingController();
   String? gender;
   final TextEditingController addressController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   // Define a regular expression to match only letters
   final RegExp letterRegExp = RegExp(r'^[A-Za-z]+$');
+
+  Future<void> _registercustomer() async {
+    String firstname = firstNameController.text;
+    String middlename = middleNameController.text;
+    String lastname = lastNameController.text;
+    String contact = contactNumberController.text;
+    String address = addressController.text;
+    String username = usernameController.text;
+    String password = passwordController.text;
+    final results = await CustomerAPI().registerCustomer(firstname, middlename,
+        lastname, contact, gender.toString(), address, username, password);
+
+    if (results['msg'] == 'success') {
+      _backtologin();
+    }
+  }
 
   // Function to display a dialog box
   // Function to display a dialog box that is not dismissible by tapping outside
@@ -252,6 +273,57 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 10),
+                Container(
+                  constraints: const BoxConstraints(
+                    minWidth: 200.0,
+                    maxWidth: 380.0,
+                  ),
+                  child: TextField(
+                    controller: usernameController,
+                    keyboardType: TextInputType.text,
+                    decoration: const InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
+                      ),
+                      labelText: 'Username',
+                      labelStyle:
+                          TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                      border: OutlineInputBorder(),
+                      hintText: 'Username',
+                      prefixIcon: Icon(Icons.perm_identity),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Container(
+                  constraints: const BoxConstraints(
+                    minWidth: 200.0,
+                    maxWidth: 380.0,
+                  ),
+                  child: TextField(
+                    controller: passwordController,
+                    keyboardType: TextInputType.text,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
+                      ),
+                      labelText: 'Password',
+                      labelStyle:
+                          TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                      border: OutlineInputBorder(),
+                      hintText: 'Password',
+                      prefixIcon: Icon(Icons.password),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 20),
                 Container(
                     constraints: const BoxConstraints(
@@ -260,7 +332,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     ),
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        _backtologin();
+                        _registercustomer();
                       },
                       icon: const Icon(Icons.app_registration_rounded),
                       label: const Text('Register'),

@@ -123,8 +123,8 @@ class _OrderScreenState extends State<OrderScreen> {
                   icon: const Icon(Icons.paid),
                   label: const Text('Review Payment & Address'),
                   style: ButtonStyle(
-                    minimumSize: MaterialStateProperty.all<Size>(Size(double.maxFinite, 50)),
-                    maximumSize: MaterialStateProperty.all<Size>(Size(double.maxFinite, 50)),
+                    minimumSize: MaterialStateProperty.all<Size>(Size(150, 50)),
+                    maximumSize: MaterialStateProperty.all<Size>(Size(150, 50)),
                   ),
                 )),
             
