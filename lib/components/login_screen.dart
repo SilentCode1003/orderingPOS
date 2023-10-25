@@ -11,9 +11,17 @@ class LoginScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Container(height: 100, child: Image.asset('assets/testimage.png')),
+            Container(
+                height: 200,
+                width: 200,
+                child: ClipOval(
+                    child: Image.asset(
+                  'assets/logo.jpg',
+                  fit: BoxFit.fill,
+                ))),
             const SizedBox(height: 20),
             const Text('Welcome to the Online Ordering System'),
+            const SizedBox(height: 5),
             Container(
               constraints: const BoxConstraints(
                 minWidth: 200.0,
@@ -23,6 +31,8 @@ class LoginScreen extends StatelessWidget {
                 controller: _usernameController,
                 keyboardType: TextInputType.text,
                 decoration: const InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
                   ),
@@ -47,6 +57,8 @@ class LoginScreen extends StatelessWidget {
                 keyboardType: TextInputType.text,
                 obscureText: true,
                 decoration: const InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
                   ),

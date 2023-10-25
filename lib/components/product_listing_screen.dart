@@ -1,10 +1,18 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:smallproject/api/products.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(Products());
 }
 
-class MyApp extends StatelessWidget {
+class Products extends StatefulWidget {
+  @override
+  State<Products> createState() => _ProductsState();
+}
+
+class _ProductsState extends State<Products> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -13,7 +21,32 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class ProductListingScreen extends StatelessWidget {
+class ProductListingScreen extends StatefulWidget {
+  @override
+  State<ProductListingScreen> createState() => _ProductListingScreenState();
+}
+
+class _ProductListingScreenState extends State<ProductListingScreen> {
+  List<Product> productlist = [];
+
+  @override
+  void initState() {
+    _getproductlist();
+    super.initState();
+  }
+
+  Future<void> _getproductlist() async {
+    final results = await ProductAPI().getProduct();
+    final jsonData = json.encode(results['data']);
+
+    setState(() {
+      for (var data in json.decode(jsonData)) {
+        productlist.add(Product(
+            data['description'], data['price'].toDouble(), data['image']));
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,9 +62,9 @@ class ProductListingScreen extends StatelessWidget {
         ],
       ),
       body: ListView.builder(
-        itemCount: products.length,
+        itemCount: productlist.length,
         itemBuilder: (context, index) {
-          final product = products[index];
+          final product = productlist[index];
           return Card(
             elevation: 3,
             margin: const EdgeInsets.all(5),
@@ -40,13 +73,10 @@ class ProductListingScreen extends StatelessWidget {
               child: Row(
                 children: <Widget>[
                   SizedBox(
-                    width: 100,
-                    height: 100,
-                    child: Image.asset(
-                      product.imageAsset,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                      width: 100,
+                      height: 100,
+                      child: Image.memory(
+                          base64Decode(productlist[index].imageAsset))),
                   Expanded(
                     child: ListTile(
                       title: Text(product.name),
@@ -77,9 +107,9 @@ class Product {
   Product(this.name, this.price, this.imageAsset);
 }
 
-final List<Product> products = [
-  Product('Product 1', 9.99, 'assets/food1.jpeg'),
-  Product('Product 2', 19.99, 'assets/food2.jpeg'),
-  Product('Product 3', 29.99, 'assets/food3.jpeg'),
-  // Add more products with their respective image paths
-];
+// final List<Product> products = [
+//   Product('Product 1', 9.99, 'assets/food1.jpeg'),
+//   Product('Product 2', 19.99, 'assets/food2.jpeg'),
+//   Product('Product 3', 29.99, 'assets/food3.jpeg'),
+//   // Add more products with their respective image paths
+// ];

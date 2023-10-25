@@ -83,6 +83,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       FilteringTextInputFormatter.deny(RegExp(r'[0-9]')),
                     ],
                     decoration: const InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
                       focusedBorder: OutlineInputBorder(
                         borderSide:
                             BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
@@ -109,6 +111,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       FilteringTextInputFormatter.deny(RegExp(r'[0-9]')),
                     ],
                     decoration: const InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
                       focusedBorder: OutlineInputBorder(
                         borderSide:
                             BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
@@ -135,6 +139,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       FilteringTextInputFormatter.deny(RegExp(r'[0-9]')),
                     ],
                     decoration: const InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
                       focusedBorder: OutlineInputBorder(
                         borderSide:
                             BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
@@ -161,6 +167,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       FilteringTextInputFormatter.deny(RegExp(r'[a-z]')),
                     ],
                     decoration: const InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
                       focusedBorder: OutlineInputBorder(
                         borderSide:
                             BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
@@ -229,6 +237,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       FilteringTextInputFormatter.deny(RegExp(r'[0-9]')),
                     ],
                     decoration: const InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
                       focusedBorder: OutlineInputBorder(
                         borderSide:
                             BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
