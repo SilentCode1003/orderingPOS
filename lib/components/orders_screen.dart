@@ -121,7 +121,7 @@ class _OrderScreenState extends State<OrderScreen> {
                 child: ElevatedButton.icon(
                   onPressed: () {},
                   icon: const Icon(Icons.paid),
-                  label: const Text('Proceed to Payment'),
+                  label: const Text('Review Payment & Address'),
                   style: ButtonStyle(
                     minimumSize: MaterialStateProperty.all<Size>(Size(double.maxFinite, 50)),
                     maximumSize: MaterialStateProperty.all<Size>(Size(double.maxFinite, 50)),

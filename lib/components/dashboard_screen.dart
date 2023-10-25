@@ -15,7 +15,7 @@ class Slide {
 
 const double uniformSlideHeight = 250.0;
 
-var slideImagePaths = ['mc1.jpg', 'mc2.jpg', 'mc3.png', 'mc4.png'];
+var slideImagePaths = ['ricemeals.jpg', 'drinkricemeals.jpg', 'drinksricemeals2.jpg'];
 
 var slides = List.generate(
   slideImagePaths.length,
@@ -37,7 +37,7 @@ final List<Widget> sliders = slides
             height: item.height,
             child: Image.asset(
               item.imagePath,
-              fit: BoxFit.cover,
+              fit: BoxFit.scaleDown,
             ),
           ),
         ),
@@ -109,11 +109,12 @@ class DashboardScreen extends StatelessWidget {
       body: Column(
         children: <Widget>[
           // Product Recommendations Section
+          const SizedBox(height: 5,),
           ExpandableCarousel(
             options: CarouselOptions(
               autoPlay: true,
-              autoPlayInterval: const Duration(seconds: 20),
-              disableCenter: true,
+              autoPlayInterval: const Duration(seconds: 10),
+              disableCenter: false,
               viewportFraction: 1.0,
               enlargeCenterPage: false,
               enableInfiniteScroll: true,
