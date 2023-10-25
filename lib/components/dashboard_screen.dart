@@ -45,10 +45,10 @@ final List<Widget> sliders = slides
     )
     .toList();
 
-void main() => runApp(const MyApp());
+void main() => runApp(const Dashoboard());
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class Dashoboard extends StatelessWidget {
+  const Dashoboard({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -67,9 +67,44 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false, // This line hides the back button
+        // automaticallyImplyLeading: false, // This line hides the back button
 
-        title: const Text('Dashboard'),
+        title: const Text('Urban Hideout Cafe'),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.brown,
+              ),
+              child: Text(
+                'Urban Hideout Cafe',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.person_2_rounded),
+              title: const Text('Profile'),
+              onTap: () {
+                // Add your action when Settings is tapped
+                Navigator.pushReplacementNamed(context, '/profile');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: const Text('Logout'),
+              onTap: () {
+                // Add your action when Settings is tapped
+                Navigator.pushReplacementNamed(context, '/login');
+              },
+            ),
+          ],
+        ),
       ),
       body: Column(
         children: <Widget>[

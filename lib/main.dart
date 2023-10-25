@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:smallproject/orders_screen.dart';
-import 'package:smallproject/registrationpage.dart';
-import 'login_screen.dart';
-import 'dashboard_screen.dart';
-import 'product_listing_screen.dart';
+import 'package:smallproject/components/orders_screen.dart';
+import 'package:smallproject/components/registrationpage.dart';
+import 'components/login_screen.dart';
+import 'components/dashboard_screen.dart';
+import 'components/product_listing_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -15,6 +15,8 @@ class MyApp extends StatelessWidget {
   
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+       theme: ThemeData.from(
+          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.brown)),
       initialRoute: '/login',
       routes: {
         '/login': (context) => LoginScreen(),
@@ -22,7 +24,6 @@ class MyApp extends StatelessWidget {
         '/product_listing': (context) => ProductListingScreen(),
         '/orders': (context) => OrdersScreen(),
         '/registration': (context) => RegistrationPage(),
-
       },
     );
   }
