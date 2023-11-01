@@ -25,18 +25,107 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final RegExp letterRegExp = RegExp(r'^[A-Za-z]+$');
 
   Future<void> _registercustomer() async {
-    String firstname = firstNameController.text;
-    String middlename = middleNameController.text;
-    String lastname = lastNameController.text;
-    String contact = contactNumberController.text;
-    String address = addressController.text;
-    String username = usernameController.text;
-    String password = passwordController.text;
-    final results = await CustomerAPI().registerCustomer(firstname, middlename,
-        lastname, contact, gender.toString(), address, username, password);
+    try {
+      String firstname = firstNameController.text;
+      String middlename = middleNameController.text;
+      String lastname = lastNameController.text;
+      String contact = contactNumberController.text;
+      String address = addressController.text;
+      String username = usernameController.text;
+      String password = passwordController.text;
+      String message = '';
 
-    if (results['msg'] == 'success') {
-      _backtologin();
+      if (firstname == '') {
+        message += 'First Name ';
+      }
+
+      if (middlename == '') {
+        message += 'Middle Name ';
+      }
+
+      if (lastname == '') {
+        message += 'Last Name ';
+      }
+
+      if (contact == '') {
+        message += 'Contact ';
+      }
+      if (address == '') {
+        message += 'Address ';
+      }
+
+      if (username == '') {
+        message += 'Username ';
+      }
+
+      if (password == '') {
+        message += 'Password ';
+      }
+      if (gender.toString() == '') {
+        message += 'Gender ';
+      }
+
+      if (message != '') {
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Warning'),
+                content: Text('Required fields $message'),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('OK'))
+                ],
+              );
+            });
+      } else {
+        final results = await CustomerAPI().registerCustomer(
+            firstname,
+            middlename,
+            lastname,
+            contact,
+            gender.toString(),
+            address,
+            username,
+            password);
+
+        if (results['msg'] == 'success') {
+          _backtologin();
+        }
+        if (results['msg'] == 'exist') {
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Warning'),
+                  content: const Text('You have already an account!'),
+                  actions: [
+                    TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('OK'))
+                  ],
+                );
+              });
+        }
+      }
+    } catch (e) {
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Error'),
+              content: Text('$e'),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('OK'))
+              ],
+            );
+          });
     }
   }
 
@@ -254,9 +343,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   child: TextField(
                     controller: addressController,
                     keyboardType: TextInputType.text,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.deny(RegExp(r'[0-9]')),
-                    ],
                     decoration: const InputDecoration(
                       filled: true,
                       fillColor: Colors.white,

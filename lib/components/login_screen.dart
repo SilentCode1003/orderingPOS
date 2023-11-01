@@ -1,8 +1,159 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-class LoginScreen extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:smallproject/api/customer.dart';
+import 'package:smallproject/repository/database.dart';
+import 'package:sqflite_common/sqlite_api.dart';
+
+class LoginScreen extends StatefulWidget {
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final DatabaseHelper dh = DatabaseHelper();
+  String customername = '';
+
+  Future<void> _login() async {
+    final BuildContext capturedContext = context;
+    try {
+      String username = _usernameController.text;
+      String password = _passwordController.text;
+      final results = await CustomerAPI().customerLogin(username, password);
+      final jsonData = json.encode(results['data']);
+
+      Database db = await dh.database;
+
+      List<Map<String, dynamic>> customerinfo = await db.query('customer');
+
+      if (username == "" && password == "") {
+        return showDialog(
+            context: capturedContext,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Empty Fields'),
+                content: const Text('Username and Password is empty'),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(capturedContext),
+                      child: const Text('OK'))
+                ],
+              );
+            });
+      }
+
+      if (results['msg'] == 'success') {
+        if (jsonData.length == 2) {
+          showDialog(
+              context: capturedContext,
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Warning'),
+                  content: const Text('Username and Password not match!'),
+                  actions: [
+                    TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('OK'))
+                  ],
+                );
+              });
+        } else {
+          if (customerinfo.isNotEmpty) {
+            for (var customer in customerinfo) {
+              // String name = pos['posid'];
+              print('${customer['customerid']}');
+              dh.updateItem(
+                  customer, 'customer', 'customerid=?', customer['storeid']);
+              // Process data
+
+              setState(() {
+                customername = '${customer['customername']}';
+              });
+            }
+          } else {
+            if (jsonData.length != 2) {
+              for (var data in json.decode(jsonData)) {
+                await dh.insertItem({
+                  "customerid": data['id'],
+                  "customername":
+                      '${data['firstname']} ${data['middlename']} ${data['lastname']}',
+                  "contactnumber": data['contactnumber'],
+                  "gender": data['gender'],
+                  "address": data['address'],
+                }, 'customer');
+
+                setState(() {
+                  customername =
+                      '${data['firstname']} ${data['middlename']} ${data['lastname']}';
+                });
+              }
+
+              List<Map<String, dynamic>> customerinfo =
+                  await db.query('customer');
+              for (var customer in customerinfo) {
+                print(
+                    '${customer['customerid']} ${customer['customername']} ${customer['contactnumber']} ${customer['gender']} ${customer['address']}');
+              }
+            } else {}
+          }
+
+          showDialog(
+              context: capturedContext,
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Login Success'),
+                  content: const Text('Login Successfull'),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.pushReplacementNamed(context, '/dashboard',
+                              arguments: {'key': customername});
+
+                          // Navigator.pushReplacementNamed(context, '/dashboard');
+                        },
+                        child: const Text('OK'))
+                  ],
+                );
+              });
+        }
+      } else {
+        showDialog(
+            context: capturedContext,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Error'),
+                content: Text('${results['msg']}'),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('OK'))
+                ],
+              );
+            });
+      }
+    } catch (e) {
+      showDialog(
+          context: capturedContext,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Error'),
+              content: Text('$e'),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('OK'))
+              ],
+            );
+          });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +229,8 @@ class LoginScreen extends StatelessWidget {
                 ),
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/dashboard');
+                    // Navigator.pushReplacementNamed(context, '/dashboard');
+                    _login();
                   },
                   icon: const Icon(Icons.login),
                   label: const Text('Login'),

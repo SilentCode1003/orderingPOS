@@ -15,7 +15,11 @@ class Slide {
 
 const double uniformSlideHeight = 250.0;
 
-var slideImagePaths = ['ricemeals.jpg', 'drinkricemeals.jpg', 'drinksricemeals2.jpg'];
+var slideImagePaths = [
+  'ricemeals.jpg',
+  'drinkricemeals.jpg',
+  'drinksricemeals2.jpg'
+];
 
 var slides = List.generate(
   slideImagePaths.length,
@@ -65,22 +69,27 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    var value = args['key'];
+    print(value);
+
     return Scaffold(
       appBar: AppBar(
         // automaticallyImplyLeading: false, // This line hides the back button
 
-        title: const Text('Urban Hideout Cafe'),
+        title: Text('Urban Hideout Cafe'),
       ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            const DrawerHeader(
+            DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.brown,
               ),
               child: Text(
-                'Urban Hideout Cafe',
+                'Urban Hideout Cafe $value',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
@@ -97,6 +106,22 @@ class DashboardScreen extends StatelessWidget {
             ),
             ListTile(
               leading: Icon(Icons.logout),
+              title: const Text('Orders'),
+              onTap: () {
+                // Add your action when Settings is tapped
+                Navigator.pushReplacementNamed(context, '/order');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: const Text('History'),
+              onTap: () {
+                // Add your action when Settings is tapped
+                Navigator.pushReplacementNamed(context, '/history');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.logout),
               title: const Text('Logout'),
               onTap: () {
                 // Add your action when Settings is tapped
@@ -109,7 +134,9 @@ class DashboardScreen extends StatelessWidget {
       body: Column(
         children: <Widget>[
           // Product Recommendations Section
-          const SizedBox(height: 5,),
+          const SizedBox(
+            height: 5,
+          ),
           ExpandableCarousel(
             options: CarouselOptions(
               autoPlay: true,
