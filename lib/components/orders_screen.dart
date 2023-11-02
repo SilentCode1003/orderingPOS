@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:smallproject/api/customerorder.dart';
 import 'package:smallproject/components/product_listing_screen.dart';
 
 class OrderScreen extends StatefulWidget {
@@ -7,23 +10,34 @@ class OrderScreen extends StatefulWidget {
   final Function(String) addToCart;
   final Function(String) removeToCart;
   final List<Product> products;
-  const OrderScreen(
-      {super.key,
-      required this.cart,
-      required this.deductToCart,
-      required this.addToCart,
-      required this.products,
-      required this.removeToCart,});
+  final int customerid;
+  const OrderScreen({
+    super.key,
+    required this.cart,
+    required this.deductToCart,
+    required this.addToCart,
+    required this.products,
+    required this.removeToCart,
+    required this.customerid
+  });
 
   @override
   State<OrderScreen> createState() => _OrderScreenState();
 }
 
 class _OrderScreenState extends State<OrderScreen> {
+  double total = 0.0;
+  String paymenttype = '';
+
+
+  Future<void> _order() async {
+    final results = await CustomerOrderAPI()
+        .order(widget.customerid, widget.products, total, paymenttype);
+    final jsonData = json.encode(results['data']);
+  }
+
   @override
   Widget build(BuildContext context) {
-    double total = 0.0;
-
     List<Widget> cartItems = [];
     for (int index = 0; index < widget.cart.length; index++) {
       String product = widget.cart.keys.elementAt(index);
@@ -119,7 +133,9 @@ class _OrderScreenState extends State<OrderScreen> {
                   maxWidth: 380.0,
                 ),
                 child: ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    _order();
+                  },
                   icon: const Icon(Icons.paid),
                   label: const Text('Review Payment & Address'),
                   style: ButtonStyle(
@@ -127,7 +143,6 @@ class _OrderScreenState extends State<OrderScreen> {
                     maximumSize: MaterialStateProperty.all<Size>(Size(150, 50)),
                   ),
                 )),
-            
           ),
         ],
       ),

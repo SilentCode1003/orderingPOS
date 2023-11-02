@@ -5,25 +5,28 @@ import 'package:smallproject/api/products.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:smallproject/components/orders_screen.dart';
 
-void main() {
-  runApp(Products());
-}
+// void main() {
+//   runApp(Products());
+// }
 
-class Products extends StatefulWidget {
-  @override
-  State<Products> createState() => _ProductsState();
-}
+// class Products extends StatefulWidget {
+//   @override
+//   State<Products> createState() => _ProductsState();
+// }
 
-class _ProductsState extends State<Products> {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: ProductListingScreen(),
-    );
-  }
-}
+// class _ProductsState extends State<Products> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       home: ProductListingScreen(),
+//     );
+//   }
+// }
 
 class ProductListingScreen extends StatefulWidget {
+  final int customerid;
+  const ProductListingScreen({super.key, required this.customerid});
+
   @override
   State<ProductListingScreen> createState() => _ProductListingScreenState();
 }
@@ -138,6 +141,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                             products: productlist,
                             addToCart: addToCart,
                             removeToCart: removeToCart,
+                            customerid: widget.customerid,
                           ),
                         ),
                       );

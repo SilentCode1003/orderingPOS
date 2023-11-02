@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:smallproject/api/customer.dart';
+import 'package:smallproject/components/dashboard_screen.dart';
 import 'package:smallproject/repository/database.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 
@@ -15,6 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final DatabaseHelper dh = DatabaseHelper();
   String customername = '';
+  int customerid = 0;
 
   Future<void> _login() async {
     final BuildContext capturedContext = context;
@@ -65,13 +67,14 @@ class _LoginScreenState extends State<LoginScreen> {
           if (customerinfo.isNotEmpty) {
             for (var customer in customerinfo) {
               // String name = pos['posid'];
-              print('${customer['customerid']}');
+              print('${customer}');
               dh.updateItem(
                   customer, 'customer', 'customerid=?', customer['storeid']);
               // Process data
 
               setState(() {
                 customername = '${customer['customername']}';
+                customerid = customer['customerid'];
               });
             }
           } else {
@@ -87,6 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 }, 'customer');
 
                 setState(() {
+                  customerid = data['id'];
                   customername =
                       '${data['firstname']} ${data['middlename']} ${data['lastname']}';
                 });
@@ -111,8 +115,18 @@ class _LoginScreenState extends State<LoginScreen> {
                   actions: [
                     TextButton(
                         onPressed: () {
-                          Navigator.pushReplacementNamed(context, '/dashboard',
-                              arguments: {'key': customername});
+                          // Navigator.pushReplacementNamed(context, '/dashboard',
+                          //     arguments: {
+                          //       'customername': customername,
+                          //       'customerid': customerid
+                          //     });
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => DashboardScreen(
+                                        customerid: customerid,
+                                        customername: customername,
+                                      )));
 
                           // Navigator.pushReplacementNamed(context, '/dashboard');
                         },

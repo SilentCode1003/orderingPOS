@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
+import 'package:smallproject/api/customercredit.dart';
 
 class Slide {
   Slide({
@@ -49,36 +52,115 @@ final List<Widget> sliders = slides
     )
     .toList();
 
-void main() => runApp(const Dashoboard());
+// void main() => runApp(const Dashoboard());
 
-class Dashoboard extends StatelessWidget {
-  const Dashoboard({Key? key}) : super(key: key);
+// class Dashoboard extends StatelessWidget {
+//   final int customerid;
+//   const Dashoboard({super.key, required this.customerid});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return const MaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       title: 'Your App Title',
+//       home: DashboardScreen(),
+//     );
+//   }
+// }
+
+class DashboardScreen extends StatefulWidget {
+  final String customername;
+  final int customerid;
+  DashboardScreen(
+      {super.key, required this.customername, required this.customerid});
 
   @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Your App Title',
-      home: DashboardScreen(),
-    );
-  }
+  State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({Key? key}) : super(key: key);
+class _DashboardScreenState extends State<DashboardScreen> {
+  double credit = 0;
+
+  @override
+  void initState() {
+    _getcredit();
+    super.initState();
+  }
+
+  Future<void> _getcredit() async {
+    try {
+      final results =
+          await CustomerCreditAPI().getcredit(widget.customerid.toString());
+      final jsonData = json.encode(results['data']);
+
+      if (results['msg'] != 'success') {
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Faild'),
+                content: const Text('Faild to fetch credit data!'),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('OK'))
+                ],
+              );
+            });
+      } else {
+        int balance = 0;
+        for (var data in json.decode(jsonData)) {
+          balance = data['balance'];
+          print(balance);
+
+          setState(() {
+            credit = balance.toDouble();
+          });
+        }
+      }
+    } catch (e) {
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Error'),
+              content: Text('$e'),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('OK'))
+              ],
+            );
+          });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    var args =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    var value = args['key'];
-    print(value);
-
+    // _getcredit(args);
     return Scaffold(
       appBar: AppBar(
         // automaticallyImplyLeading: false, // This line hides the back button
-
-        title: Text('Urban Hideout Cafe'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Urban Hideout Cafe'),
+              ],
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [Text('${credit.toStringAsFixed(2)}')],
+            )
+          ],
+        ),
       ),
       drawer: Drawer(
         child: ListView(
@@ -88,12 +170,44 @@ class DashboardScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.brown,
               ),
-              child: Text(
-                'Urban Hideout Cafe $value',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ClipOval(
+                      child: Image.asset(
+                    'assets/logo.jpg',
+                    fit: BoxFit.fill,
+                    height: 80,
+                  )),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Urban Hideout Cafe',
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        widget.customername,
+                        style: TextStyle(fontSize: 16, color: Colors.white),
+                      ),
+                      Text(
+                        '${credit.toStringAsFixed(2)}',
+                        style: TextStyle(fontSize: 16, color: Colors.white),
+                      ),
+                    ],
+                  )
+                ],
               ),
             ),
             ListTile(
@@ -105,7 +219,7 @@ class DashboardScreen extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.logout),
+              leading: const Icon(Icons.receipt_long),
               title: const Text('Orders'),
               onTap: () {
                 // Add your action when Settings is tapped
@@ -113,7 +227,7 @@ class DashboardScreen extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.logout),
+              leading: const Icon(Icons.history),
               title: const Text('History'),
               onTap: () {
                 // Add your action when Settings is tapped

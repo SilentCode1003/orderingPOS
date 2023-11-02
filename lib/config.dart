@@ -10,4 +10,6 @@ class Config {
   static const String getDetailIDAPI = 'salesdetails/getdetailid';
   static const String registrationAPI = 'customer/save';
   static const String loginCustomerAPI = 'customer/login';
+  static const String customerOrderAPI = 'customerorder/save';
+  static const String customerCreditAPI = 'customercredit/getcredit';
 }
