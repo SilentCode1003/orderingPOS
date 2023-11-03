@@ -47,95 +47,64 @@ class _OrderScreenState extends State<OrderScreen> {
   String currentLocation = '';
   double total = 0.0;
 
-  // Map<String, int> cart = {};
-  // int totalCartItems = 0;
-  // Map<String, double> totalPrices = {};
-  // List<Product> productlist = [];
-
   final TextEditingController _transactionReferenceNumberController =
       TextEditingController();
 
   MapController mapController = MapController();
   ZoomLevel zoomLevel = ZoomLevel(17.5);
 
-  // Future<void> _loadorderitems() async {
-  //   try {
-  //     for (int index = 0; index < widget.cart.length; index++) {
-  //       String product = widget.cart.keys.elementAt(index);
-  //       int? quantity = widget.cart[product];
-  //       Product? productData = widget.productlist.firstWhere(
-  //         (p) => p.name == product,
-  //         orElse: () => Product("Product Not Found", 0.0, ""),
-  //       );
+  @override
+  void initState() {
+    super.initState();
+  }
 
-  //       if (productData != null) {
-  //         double totalPrice = productData.price * quantity!;
-  //         total = totalPrice;
+  Future<void> _getCurrentLocation() async {
+    try {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          });
 
-  //         cartItems.add(Card(
-  //           elevation: 3,
-  //           margin: const EdgeInsets.all(5),
-  //           child: ListTile(
-  //             title: Text('$product (QTY $quantity)'),
-  //             subtitle: Text('Total Price: \₱${totalPrice.toStringAsFixed(2)}'),
-  //             trailing: Row(
-  //               mainAxisSize: MainAxisSize.min,
-  //               children: [
-  //                 ElevatedButton(
-  //                   onPressed: () {
-  //                     setState(() {
-  //                       widget.addToCart(product);
-  //                     });
-  //                   },
-  //                   child: const Icon(Icons.plus_one),
-  //                 ),
-  //                 const SizedBox(
-  //                     width: 5), // Add some spacing between the buttons
-  //                 ElevatedButton(
-  //                   onPressed: () {
-  //                     widget.deductToCart(product);
-  //                     setState(() {});
-  //                   },
-  //                   child: const Icon(Icons.exposure_minus_1),
-  //                 ),
-  //                 const SizedBox(
-  //                     width: 16), // Add some spacing between the buttons
-  //                 ElevatedButton.icon(
-  //                     onPressed: () {
-  //                       widget.removeToCart(product);
-  //                       setState(() {});
-  //                     },
-  //                     icon: const Icon(
-  //                       Icons.delete,
-  //                       color: Colors.white,
-  //                     ),
-  //                     label: const Text('REMOVE')),
-  //               ],
-  //             ),
-  //           ),
-  //         ));
-  //       } else {
-  //         // cartItems.add(
-  //         //   Card(
-  //         //     elevation: 3,
-  //         //     margin: const EdgeInsets.all(5),
-  //         //     child: ListTile(
-  //         //       title: const Text('Product Not Found'),
-  //         //       subtitle: const Text('Total Price: \₱0.00'),
-  //         //       trailing: ElevatedButton(
-  //         //         onPressed: () {
-  //         //           widget.deductToCart(product);
-  //         //           setState(() {});
-  //         //         },
-  //         //         child: const Text("Remove"),
-  //         //       ),
-  //         //     ),
-  //         //   ),
-  //         // );
-  //       }
-  //     }
-  //   } catch (e) {}
-  // }
+      await getCurrentLocation().then((Position position) {
+        // Use the position data
+        double latitude = position.latitude;
+        double longitude = position.longitude;
+
+        setState(() {
+          _latitude = latitude;
+          _longitude = longitude;
+        });
+
+        getGeolocationName(latitude, longitude)
+            .then((locationname) => {
+                  setState(() {
+                    _locationname = locationname;
+                  })
+                })
+            .catchError((onError) => print(onError));
+      });
+
+      Navigator.of(context).pop();
+    } catch (e) {
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Error'),
+              content: Text('$e'),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('OK'))
+              ],
+            );
+          });
+    }
+  }
 
   Future<void> _sendorder() async {
     try {
@@ -213,6 +182,7 @@ class _OrderScreenState extends State<OrderScreen> {
 
   Future<void> _order() async {
     try {
+      await _getCurrentLocation();
       LatLng activelocation = LatLng(_latitude, _longitude);
       for (int index = 0; index < widget.cart.length; index++) {
         String product = widget.cart.keys.elementAt(index);
@@ -230,27 +200,6 @@ class _OrderScreenState extends State<OrderScreen> {
           'quantity': quantity
         });
       }
-
-      getCurrentLocation().then((Position position) {
-        // Use the position data
-        double latitude = position.latitude;
-        double longitude = position.longitude;
-
-        setState(() {
-          _latitude = latitude;
-          _longitude = longitude;
-        });
-
-        getGeolocationName(latitude, longitude)
-            .then((locationname) => {
-                  setState(() {
-                    _locationname = locationname;
-                  })
-                })
-            .catchError((onError) {
-          print(onError);
-        });
-      });
 
       showDialog(
           context: context,
@@ -308,7 +257,11 @@ class _OrderScreenState extends State<OrderScreen> {
                       _sendorder();
                     },
                     child: const Text('Confirm')),
-                ElevatedButton(onPressed: () {}, child: const Text('Close'))
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Close'))
               ],
             );
           });
