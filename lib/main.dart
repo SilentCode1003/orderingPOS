@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:smallproject/components/activeorder.dart';
+import 'package:smallproject/components/orders_screen.dart';
 import 'package:smallproject/components/registrationpage.dart';
 import 'package:smallproject/components/trackorder.dart';
 import 'package:smallproject/repository/database.dart';
@@ -63,6 +64,17 @@ class MyApp extends StatelessWidget {
         '/activeorder': (context) => const ActiveOrderPage(
               customerid: 0,
               customername: '',
+            ),
+        '/orderscreen': (context) => OrderScreen(
+              customerid: 0,
+              cart: {},
+              deductToCart: (String) {},
+              addToCart: (String) {},
+              removeToCart: (String) {},
+              credit: 0,
+              totalCartItems: 0,
+              totalPrices: {},
+              productlist: [],
             ),
       },
     );

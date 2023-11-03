@@ -38,7 +38,6 @@ class OrderScreen extends StatefulWidget {
 }
 
 class _OrderScreenState extends State<OrderScreen> {
-  double total = 0.0;
   String paymenttype = '';
   List<Map<String, dynamic>> items = [];
   List<Map<String, dynamic>> order = [];
@@ -46,6 +45,7 @@ class _OrderScreenState extends State<OrderScreen> {
   double _longitude = 0;
   String _locationname = '';
   String currentLocation = '';
+  double total = 0.0;
 
   // Map<String, int> cart = {};
   // int totalCartItems = 0;
@@ -57,93 +57,85 @@ class _OrderScreenState extends State<OrderScreen> {
 
   MapController mapController = MapController();
   ZoomLevel zoomLevel = ZoomLevel(17.5);
-  List<Widget> cartItems = [];
 
-  @override
-  void initState() {
-    _loadorderitems();
+  // Future<void> _loadorderitems() async {
+  //   try {
+  //     for (int index = 0; index < widget.cart.length; index++) {
+  //       String product = widget.cart.keys.elementAt(index);
+  //       int? quantity = widget.cart[product];
+  //       Product? productData = widget.productlist.firstWhere(
+  //         (p) => p.name == product,
+  //         orElse: () => Product("Product Not Found", 0.0, ""),
+  //       );
 
-    super.initState();
-  }
+  //       if (productData != null) {
+  //         double totalPrice = productData.price * quantity!;
+  //         total = totalPrice;
 
-  Future<void> _loadorderitems() async {
-    try {
-      for (int index = 0; index < widget.cart.length; index++) {
-        String product = widget.cart.keys.elementAt(index);
-        int? quantity = widget.cart[product];
-        Product? productData = widget.productlist.firstWhere(
-          (p) => p.name == product,
-          orElse: () => Product("Product Not Found", 0.0, ""),
-        );
-
-        if (productData != null) {
-          double totalPrice = productData.price * quantity!;
-          total += totalPrice;
-          cartItems.add(Card(
-            elevation: 3,
-            margin: const EdgeInsets.all(5),
-            child: ListTile(
-              title: Text('$product (QTY $quantity)'),
-              subtitle: Text('Total Price: \₱${totalPrice.toStringAsFixed(2)}'),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      cartItems.clear();
-                      setState(() {
-                        widget.addToCart(product);
-                      });
-                    },
-                    child: const Text("+"),
-                  ),
-                  const SizedBox(
-                      width: 5), // Add some spacing between the buttons
-                  ElevatedButton(
-                    onPressed: () {
-                      widget.deductToCart(product);
-                      setState(() {});
-                    },
-                    child: const Text("-"),
-                  ),
-                  const SizedBox(
-                      width: 16), // Add some spacing between the buttons
-                  ElevatedButton.icon(
-                      onPressed: () {
-                        widget.removeToCart(product);
-                        setState(() {});
-                      },
-                      icon: const Icon(
-                        Icons.delete,
-                        color: Colors.white,
-                      ),
-                      label: const Text('REMOVE')),
-                ],
-              ),
-            ),
-          ));
-        } else {
-          // cartItems.add(
-          //   Card(
-          //     elevation: 3,
-          //     margin: const EdgeInsets.all(5),
-          //     child: ListTile(
-          //       title: const Text('Product Not Found'),
-          //       subtitle: const Text('Total Price: \₱0.00'),
-          //       trailing: ElevatedButton(
-          //         onPressed: () {
-          //           widget.deductToCart(product);
-          //           setState(() {});
-          //         },
-          //         child: const Text("Remove"),
-          //       ),
-          //     ),
-          //   ),
-          // );
-        }
-      }
-    } catch (e) {}
-  }
+  //         cartItems.add(Card(
+  //           elevation: 3,
+  //           margin: const EdgeInsets.all(5),
+  //           child: ListTile(
+  //             title: Text('$product (QTY $quantity)'),
+  //             subtitle: Text('Total Price: \₱${totalPrice.toStringAsFixed(2)}'),
+  //             trailing: Row(
+  //               mainAxisSize: MainAxisSize.min,
+  //               children: [
+  //                 ElevatedButton(
+  //                   onPressed: () {
+  //                     setState(() {
+  //                       widget.addToCart(product);
+  //                     });
+  //                   },
+  //                   child: const Icon(Icons.plus_one),
+  //                 ),
+  //                 const SizedBox(
+  //                     width: 5), // Add some spacing between the buttons
+  //                 ElevatedButton(
+  //                   onPressed: () {
+  //                     widget.deductToCart(product);
+  //                     setState(() {});
+  //                   },
+  //                   child: const Icon(Icons.exposure_minus_1),
+  //                 ),
+  //                 const SizedBox(
+  //                     width: 16), // Add some spacing between the buttons
+  //                 ElevatedButton.icon(
+  //                     onPressed: () {
+  //                       widget.removeToCart(product);
+  //                       setState(() {});
+  //                     },
+  //                     icon: const Icon(
+  //                       Icons.delete,
+  //                       color: Colors.white,
+  //                     ),
+  //                     label: const Text('REMOVE')),
+  //               ],
+  //             ),
+  //           ),
+  //         ));
+  //       } else {
+  //         // cartItems.add(
+  //         //   Card(
+  //         //     elevation: 3,
+  //         //     margin: const EdgeInsets.all(5),
+  //         //     child: ListTile(
+  //         //       title: const Text('Product Not Found'),
+  //         //       subtitle: const Text('Total Price: \₱0.00'),
+  //         //       trailing: ElevatedButton(
+  //         //         onPressed: () {
+  //         //           widget.deductToCart(product);
+  //         //           setState(() {});
+  //         //         },
+  //         //         child: const Text("Remove"),
+  //         //       ),
+  //         //     ),
+  //         //   ),
+  //         // );
+  //       }
+  //     }
+  //   } catch (e) {}
+  // }
 
   Future<void> _sendorder() async {
     try {
@@ -520,6 +512,87 @@ class _OrderScreenState extends State<OrderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> cartItems = [];
+    double totalitems = 0.0;
+
+    for (int index = 0; index < widget.cart.length; index++) {
+      setState(() {
+        String product = widget.cart.keys.elementAt(index);
+        var quantity = widget.cart[product];
+        Product productData = widget.productlist.firstWhere(
+          (p) => p.name == product,
+          orElse: () => Product("Product Not Found", 0.0, ""),
+        );
+
+        if (productData != null) {
+          double totalPrice = productData.price * quantity!;
+          totalitems += totalPrice;
+          cartItems.add(Card(
+            elevation: 3,
+            margin: const EdgeInsets.all(5),
+            child: ListTile(
+              title: Text('$product (QTY $quantity)'),
+              subtitle: Text('Total Price: \₱${totalPrice.toStringAsFixed(2)}'),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        widget.addToCart(product);
+                      });
+                    },
+                    child: const Icon(Icons.plus_one),
+                  ),
+                  const SizedBox(
+                      width: 5), // Add some spacing between the buttons
+                  ElevatedButton(
+                    onPressed: () {
+                      widget.deductToCart(product);
+                      setState(() {});
+                    },
+                    child: const Icon(Icons.exposure_minus_1),
+                  ),
+                  const SizedBox(
+                      width: 16), // Add some spacing between the buttons
+                  ElevatedButton.icon(
+                      onPressed: () {
+                        widget.removeToCart(product);
+                        setState(() {});
+                      },
+                      icon: const Icon(
+                        Icons.delete,
+                        color: Colors.white,
+                      ),
+                      label: const Text('REMOVE')),
+                ],
+              ),
+            ),
+          ));
+        } else {
+          cartItems.add(
+            Card(
+              elevation: 3,
+              margin: const EdgeInsets.all(5),
+              child: ListTile(
+                title: const Text('Product Not Found'),
+                subtitle: const Text('Total Price: \₱0.00'),
+                trailing: ElevatedButton(
+                  onPressed: () {
+                    widget.deductToCart(product);
+                    setState(() {});
+                  },
+                  child: const Text("Remove"),
+                ),
+              ),
+            ),
+          );
+        }
+      });
+    }
+
+    total = totalitems;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cart Items'),
