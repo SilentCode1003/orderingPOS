@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:smallproject/api/customercredit.dart';
+import 'package:smallproject/components/activeorder.dart';
 import 'package:smallproject/components/product_listing_screen.dart';
+import 'package:smallproject/components/trackorder.dart';
 import 'package:smallproject/repository/database.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 
@@ -227,20 +229,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ],
               ),
             ),
-            ListTile(
-              leading: Icon(Icons.person_2_rounded),
-              title: const Text('Profile'),
-              onTap: () {
-                // Add your action when Settings is tapped
-                Navigator.pushReplacementNamed(context, '/profile');
-              },
-            ),
+            // ListTile(
+            //   leading: Icon(Icons.person_2_rounded),
+            //   title: const Text('Profile'),
+            //   onTap: () {
+            //     // Add your action when Settings is tapped
+            //     Navigator.pushReplacementNamed(context, '/profile');
+            //   },
+            // ),
             ListTile(
               leading: const Icon(Icons.receipt_long),
               title: const Text('Orders'),
               onTap: () {
                 // Add your action when Settings is tapped
-                Navigator.pushReplacementNamed(context, '/activeorder');
+               Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ActiveOrderPage(
+                            customerid: customerid,
+                            customername: customername,
+                          ),
+                        ),
+                      );
               },
             ),
             ListTile(
@@ -248,7 +258,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
               title: const Text('History'),
               onTap: () {
                 // Add your action when Settings is tapped
-                Navigator.pushReplacementNamed(context, '/trackorder');
+               Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TrackOrderPage(
+                            customerid: customerid,
+                            customername: customername,
+                          ),
+                        ),
+                      );
               },
             ),
             ListTile(
@@ -311,7 +329,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     title: 'Orders',
                     icon: Icons.assignment,
                     onTap: () {
-                      Navigator.pushNamed(context, '/trackorder');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TrackOrderPage(
+                            customerid: customerid,
+                            customername: customername,
+                          ),
+                        ),
+                      );
                     },
                   ),
                 ],

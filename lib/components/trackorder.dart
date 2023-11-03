@@ -15,24 +15,25 @@ class TrackOrderPage extends StatefulWidget {
 }
 
 class _TrackOrderPageState extends State<TrackOrderPage> {
-  final List<Product> products = [
-    Product(
-      name: "Combo Meal",
-      description: 'Breakfast - Coffee and others',
-      imageAsset: "",
-      price: 19.99,
-    ),
-    Product(
-      name: "Borgir",
-      description: 'Double patty',
-      imageAsset: "",
-      price: 24.99,
-    ),
-  ];
+  // final List<Order> orders = [
+  //   Order(
+  //     name: "Combo Meal",
+  //     description: 'Breakfast - Coffee and others',
+  //     imageAsset: "",
+  //     price: 19.99,
+  //   ),
+  //   Order(
+  //     name: "Borgir",
+  //     description: 'Double patty',
+  //     imageAsset: "",
+  //     price: 24.99,
+  //   ),
+  // ];
+
+  List<Order> orders = [];
 
   @override
   void initState() {
-    // TODO: implement initState
     _getorderhistory();
     super.initState();
   }
@@ -42,10 +43,40 @@ class _TrackOrderPageState extends State<TrackOrderPage> {
       final results =
           await CustomerOrderAPI().orderhistory(widget.customerid.toString());
       final jsonData = json.encode(results['data']);
-    } catch (e) {}
+
+      setState(() {
+        for (var data in json.decode(jsonData)) {
+          int total = data['total'];
+          orders.add(Order(
+            orderid: data['id'],
+            date: data['date'],
+            total: total.toDouble(),
+            paymenttype: data['paymenttype'],
+            status: data['status'],
+            image: '',
+          ));
+        }
+      });
+      // if (results['msg'] == 'success') {}
+    } catch (e) {
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Error'),
+              content: Text('$e'),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('OK'))
+              ],
+            );
+          });
+    }
   }
- 
-  void showProductDetails(BuildContext context, Product product) {
+
+  void showOrderDetails(BuildContext context, Order order) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -57,9 +88,9 @@ class _TrackOrderPageState extends State<TrackOrderPage> {
                 padding: const EdgeInsets.all(15.0),
                 child: Column(
                   children: [
-                    const Text('Order ID# 000000'),
-                    const Text(
-                      'DD Mmm, hh:mm',
+                    Text('Order ID# ${order.orderid}'),
+                    Text(
+                      '${order.date}',
                       style: TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                     Padding(
@@ -96,30 +127,15 @@ class _TrackOrderPageState extends State<TrackOrderPage> {
                               children: [
                                 ListTile(
                                   leading: const Text('1x'),
-                                  title: Text(product.name),
+                                  title: Text(order.orderid.toString()),
                                   trailing: Text(
-                                    '₱${product.price.toStringAsFixed(2)}',
+                                    '₱${order.total.toStringAsFixed(2)}',
                                     style: const TextStyle(
                                       color: Color.fromARGB(255, 0, 0, 0),
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
                                 ),
-                                const Text('data'),
-                                const Text('data'),
-                                const Text('data'),
-                                const Text('data'),
-                                const Text('data'),
-                                const Text('data'),
-                                const Text('data'),
-                                const Text('data'),
-                                const Text('data'),
-                                const Text('data'),
-                                const Text('data'),
-                                const Text('data'),
-                                const Text('data'),
-                                const Text('data'),
-                                const Text('data'),
                                 const Text('data'),
                                 const Text('data'),
                               ],
@@ -211,9 +227,9 @@ class _TrackOrderPageState extends State<TrackOrderPage> {
           children: <Widget>[
             Expanded(
               child: ListView.builder(
-                itemCount: products.length,
+                itemCount: orders.length,
                 itemBuilder: (context, index) {
-                  Product product = products[index];
+                  Order order = orders[index];
                   return Padding(
                     padding: const EdgeInsets.only(
                       top: 8.0,
@@ -237,7 +253,7 @@ class _TrackOrderPageState extends State<TrackOrderPage> {
                                         width: 100,
                                         height: 100,
                                         child: Image.asset(
-                                          product.imageAsset,
+                                          'assets/logo.jpg',
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -256,7 +272,7 @@ class _TrackOrderPageState extends State<TrackOrderPage> {
                                         children: [
                                           Expanded(
                                             child: Text(
-                                              product.name,
+                                              'Order #:${order.orderid}',
                                               maxLines: 2,
                                               overflow: TextOverflow.ellipsis,
                                               style: const TextStyle(
@@ -266,7 +282,7 @@ class _TrackOrderPageState extends State<TrackOrderPage> {
                                           ),
                                           const SizedBox(width: 30),
                                           Text(
-                                            'Price: \₱${product.price.toStringAsFixed(2)}',
+                                            'Price: \₱${order.total.toStringAsFixed(2)}',
                                             style: const TextStyle(
                                               color:
                                                   Color.fromARGB(255, 0, 0, 0),
@@ -275,11 +291,11 @@ class _TrackOrderPageState extends State<TrackOrderPage> {
                                           ),
                                         ],
                                       ),
-                                      const Padding(
+                                      Padding(
                                         padding: EdgeInsets.only(top: 5.0),
                                         child: Text(
-                                          'DD Mmm, hh:mm',
-                                          style: TextStyle(
+                                          order.status,
+                                          style: const TextStyle(
                                               fontSize: 12, color: Colors.grey),
                                         ),
                                       ),
@@ -287,7 +303,7 @@ class _TrackOrderPageState extends State<TrackOrderPage> {
                                         padding:
                                             const EdgeInsets.only(top: 8.0),
                                         child: Text(
-                                          product.description,
+                                          order.date,
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                         ),
@@ -304,7 +320,7 @@ class _TrackOrderPageState extends State<TrackOrderPage> {
                                 Expanded(
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      showProductDetails(context, product);
+                                      showOrderDetails(context, order);
                                     },
                                     child: const Text('Detailed View'),
                                   ),
@@ -326,16 +342,20 @@ class _TrackOrderPageState extends State<TrackOrderPage> {
   }
 }
 
-class Product {
-  final String name;
-  final String imageAsset;
-  final double price;
-  String description;
+class Order {
+  final int orderid;
+  final String date;
+  final double total;
+  final String paymenttype;
+  final String status;
+  final String image;
 
-  Product({
-    required this.name,
-    required this.imageAsset,
-    required this.price,
-    required this.description,
+  Order({
+    required this.image,
+    required this.orderid,
+    required this.date,
+    required this.total,
+    required this.paymenttype,
+    required this.status,
   });
 }
