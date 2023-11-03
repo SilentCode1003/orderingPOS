@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:smallproject/api/customercredit.dart';
+import 'package:smallproject/components/product_listing_screen.dart';
+import 'package:smallproject/repository/database.dart';
+import 'package:sqflite_common/sqlite_api.dart';
 
 class Slide {
   Slide({
@@ -79,6 +82,9 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  final DatabaseHelper dh = DatabaseHelper();
+  String customername = '';
+  int customerid = 0;
   double credit = 0;
 
   @override
@@ -89,9 +95,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Future<void> _getcredit() async {
     try {
+      Database db = await dh.database;
+      List<Map<String, dynamic>> customerinfo = await db.query('customer');
+
+      for (var customer in customerinfo) {
+        setState(() {
+          customername = '${customer['customername']}';
+          customerid = customer['customerid'];
+        });
+      }
       final results =
-          await CustomerCreditAPI().getcredit(widget.customerid.toString());
+          await CustomerCreditAPI().getcredit(customerid.toString());
       final jsonData = json.encode(results['data']);
+
+      print('customerid: ${customerid}');
 
       if (results['msg'] != 'success') {
         showDialog(
@@ -112,7 +129,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         int balance = 0;
         for (var data in json.decode(jsonData)) {
           balance = data['balance'];
-          print(balance);
+          print('balance: $balance');
 
           setState(() {
             credit = balance.toDouble();
@@ -157,7 +174,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Column(
               mainAxisAlignment: MainAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
-              children: [Text('${credit.toStringAsFixed(2)}')],
+              children: [Text('\₱ ${credit.toStringAsFixed(2)}')],
             )
           ],
         ),
@@ -198,11 +215,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        widget.customername,
+                        customername,
                         style: TextStyle(fontSize: 16, color: Colors.white),
                       ),
                       Text(
-                        '${credit.toStringAsFixed(2)}',
+                        '\₱ ${credit.toStringAsFixed(2)}',
                         style: TextStyle(fontSize: 16, color: Colors.white),
                       ),
                     ],
@@ -223,7 +240,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               title: const Text('Orders'),
               onTap: () {
                 // Add your action when Settings is tapped
-                Navigator.pushReplacementNamed(context, '/order');
+                Navigator.pushReplacementNamed(context, '/activeorder');
               },
             ),
             ListTile(
@@ -231,7 +248,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               title: const Text('History'),
               onTap: () {
                 // Add your action when Settings is tapped
-                Navigator.pushReplacementNamed(context, '/history');
+                Navigator.pushReplacementNamed(context, '/trackorder');
               },
             ),
             ListTile(
@@ -278,14 +295,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     title: 'Menu',
                     icon: Icons.shopping_cart,
                     onTap: () {
-                      Navigator.pushNamed(context, '/product_listing');
+                      // Navigator.pushNamed(context, '/product_listing');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProductListingScreen(
+                            customerid: customerid,
+                            credit: credit,
+                          ),
+                        ),
+                      );
                     },
                   ),
                   DashboardItem(
                     title: 'Orders',
                     icon: Icons.assignment,
                     onTap: () {
-                      Navigator.pushNamed(context, '/orders');
+                      Navigator.pushNamed(context, '/trackorder');
                     },
                   ),
                 ],

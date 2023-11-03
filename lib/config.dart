@@ -12,4 +12,6 @@ class Config {
   static const String loginCustomerAPI = 'customer/login';
   static const String customerOrderAPI = 'customerorder/save';
   static const String customerCreditAPI = 'customercredit/getcredit';
+  static const String paymentAPI = 'masterpayment/load';
+  static const String orderhistoryAPI = 'customerorder/getorderhistory';
 }

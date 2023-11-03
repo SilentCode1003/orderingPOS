@@ -66,16 +66,17 @@ class _LoginScreenState extends State<LoginScreen> {
         } else {
           if (customerinfo.isNotEmpty) {
             for (var customer in customerinfo) {
-              // String name = pos['posid'];
-              print('${customer}');
-              dh.updateItem(
-                  customer, 'customer', 'customerid=?', customer['storeid']);
-              // Process data
+              // // String name = pos['posid'];
+              // print('${customer}');
+              // dh.updateItem(
+              //     customer, 'customer', 'customerid=?', customer['storeid']);
+              // // Process data
 
-              setState(() {
-                customername = '${customer['customername']}';
-                customerid = customer['customerid'];
-              });
+              // setState(() {
+              //   customername = '${customer['customername']}';
+              //   customerid = customer['customerid'];
+              // });
+              _success();
             }
           } else {
             if (jsonData.length != 2) {
@@ -102,38 +103,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 print(
                     '${customer['customerid']} ${customer['customername']} ${customer['contactnumber']} ${customer['gender']} ${customer['address']}');
               }
+
+              _success();
             } else {}
           }
 
-          showDialog(
-              context: capturedContext,
-              barrierDismissible: false,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text('Login Success'),
-                  content: const Text('Login Successfull'),
-                  actions: [
-                    TextButton(
-                        onPressed: () {
-                          // Navigator.pushReplacementNamed(context, '/dashboard',
-                          //     arguments: {
-                          //       'customername': customername,
-                          //       'customerid': customerid
-                          //     });
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => DashboardScreen(
-                                        customerid: customerid,
-                                        customername: customername,
-                                      )));
-
-                          // Navigator.pushReplacementNamed(context, '/dashboard');
-                        },
-                        child: const Text('OK'))
-                  ],
-                );
-              });
+          print('customerid: $customerid');
         }
       } else {
         showDialog(
@@ -167,6 +142,38 @@ class _LoginScreenState extends State<LoginScreen> {
             );
           });
     }
+  }
+
+  Future<void> _success() async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Login Success'),
+            content: const Text('Login Successfull'),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    // Navigator.pushReplacementNamed(context, '/dashboard',
+                    //     arguments: {
+                    //       'customername': customername,
+                    //       'customerid': customerid
+                    //     });
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DashboardScreen(
+                                  customerid: customerid,
+                                  customername: customername,
+                                )));
+
+                    // Navigator.pushReplacementNamed(context, '/dashboard');
+                  },
+                  child: const Text('OK'))
+            ],
+          );
+        });
   }
 
   @override

@@ -1,8 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:smallproject/components/orders_screen.dart';
+import 'package:smallproject/components/activeorder.dart';
 import 'package:smallproject/components/registrationpage.dart';
+import 'package:smallproject/components/trackorder.dart';
 import 'package:smallproject/repository/database.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'components/login_screen.dart';
@@ -52,8 +53,17 @@ class MyApp extends StatelessWidget {
             ),
         '/product_listing': (context) => const ProductListingScreen(
               customerid: 0,
+              credit: 0,
             ),
         '/registration': (context) => RegistrationPage(),
+        '/trackorder': (context) => const TrackOrderPage(
+              customerid: 0,
+              customername: '',
+            ),
+        '/activeorder': (context) => const ActiveOrderPage(
+              customerid: 0,
+              customername: '',
+            ),
       },
     );
   }

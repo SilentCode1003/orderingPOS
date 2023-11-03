@@ -25,7 +25,9 @@ import 'package:smallproject/components/orders_screen.dart';
 
 class ProductListingScreen extends StatefulWidget {
   final int customerid;
-  const ProductListingScreen({super.key, required this.customerid});
+  final double credit;
+  const ProductListingScreen(
+      {super.key, required this.customerid, required this.credit});
 
   @override
   State<ProductListingScreen> createState() => _ProductListingScreenState();
@@ -132,16 +134,20 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                   child: IconButton(
                     icon: const Icon(Icons.shopping_cart),
                     onPressed: () {
+                      print('customerid: ${widget.customerid}');
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => OrderScreen(
                             cart: cart,
                             deductToCart: deductToCart,
-                            products: productlist,
+                            productlist: productlist,
                             addToCart: addToCart,
                             removeToCart: removeToCart,
                             customerid: widget.customerid,
+                            credit: widget.credit,
+                            totalCartItems: totalCartItems,
+                            totalPrices: totalPrices,
                           ),
                         ),
                       );
