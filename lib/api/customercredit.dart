@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:smallproject/components/product_listing_screen.dart';
+import 'package:uhordering/components/product_listing_screen.dart';
 
 import '../config.dart';
 import 'package:http/http.dart' as http;

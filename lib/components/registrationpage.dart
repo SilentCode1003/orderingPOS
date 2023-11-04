@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:smallproject/api/customer.dart';
+import 'package:uhordering/api/customer.dart';
 
 class RegistrationPage extends StatefulWidget {
   RegistrationPage({Key? key}) : super(key: key);
@@ -167,16 +167,16 @@ class _RegistrationPageState extends State<RegistrationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Registration Page'),
-      ),
+      // appBar: AppBar(
+      //   title: const Text('Registration Page'),
+      // ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(0),
           child: Container(
             constraints: const BoxConstraints(
-              minWidth: 280.0,
-              maxWidth: 450.0,
+              minWidth: 220.0,
+              maxWidth: 280.0,
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

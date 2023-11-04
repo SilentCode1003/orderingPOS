@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:smallproject/components/product_listing_screen.dart';
+import 'package:uhordering/components/product_listing_screen.dart';
 
 import '../config.dart';
 import 'package:http/http.dart' as http;
@@ -56,6 +56,25 @@ class CustomerOrderAPI {
     final url = Uri.parse('${Config.apiUrl}${Config.activeOrederAPI}');
     final response = await http.post(url, body: {
       'customerid': customerid,
+    });
+
+    final responseData = json.decode(response.body);
+    final status = response.statusCode;
+    final msg = responseData['msg'];
+    final results = responseData['data'];
+
+    Map<String, dynamic> data = {};
+    data = {'msg': msg, 'status': status, 'data': results};
+
+    return data;
+  }
+
+  Future<Map<String, dynamic>> getorderdetail(
+    String orderid,
+  ) async {
+    final url = Uri.parse('${Config.apiUrl}${Config.getOrderDetailAPI}');
+    final response = await http.post(url, body: {
+      'orderid': orderid,
     });
 
     final responseData = json.decode(response.body);

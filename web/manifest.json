@@ -1,6 +1,6 @@
 {
-    "name": "smallproject",
-    "short_name": "smallproject",
+    "name": "uhordering",
+    "short_name": "uhordering",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:smallproject/api/products.dart';
+import 'package:uhordering/api/products.dart';
 import 'package:badges/badges.dart' as badges;
-import 'package:smallproject/components/orders_screen.dart';
+import 'package:uhordering/components/orders_screen.dart';
 
 // void main() {
 //   runApp(Products());

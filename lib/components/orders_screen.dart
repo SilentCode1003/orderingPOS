@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:smallproject/api/customerorder.dart';
-import 'package:smallproject/api/payments.dart';
-import 'package:smallproject/components/product_listing_screen.dart';
-import 'package:smallproject/repository/geolocator.dart';
+import 'package:uhordering/api/customerorder.dart';
+import 'package:uhordering/api/payments.dart';
+import 'package:uhordering/components/product_listing_screen.dart';
+import 'package:uhordering/repository/geolocator.dart';
 import 'package:geodesy/geodesy.dart';
 
 class OrderScreen extends StatefulWidget {

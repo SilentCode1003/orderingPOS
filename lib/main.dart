@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:smallproject/components/activeorder.dart';
-import 'package:smallproject/components/orders_screen.dart';
-import 'package:smallproject/components/registrationpage.dart';
-import 'package:smallproject/components/trackorder.dart';
-import 'package:smallproject/repository/database.dart';
+import 'package:uhordering/components/activeorder.dart';
+import 'package:uhordering/components/orders_screen.dart';
+import 'package:uhordering/components/registrationpage.dart';
+import 'package:uhordering/components/trackorder.dart';
+import 'package:uhordering/repository/database.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'components/login_screen.dart';
 import 'components/dashboard_screen.dart';

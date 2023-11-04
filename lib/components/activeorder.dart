@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:smallproject/api/customerorder.dart';
+import 'package:uhordering/api/customerorder.dart';
 
 class ActiveOrderPage extends StatefulWidget {
   final int customerid;
@@ -15,21 +15,6 @@ class ActiveOrderPage extends StatefulWidget {
 }
 
 class _ActiveOrderPageState extends State<ActiveOrderPage> {
-  // final List<Order> orders = [
-  //   Order(
-  //     name: "Combo Meal",
-  //     description: 'Breakfast - Coffee and others',
-  //     imageAsset: "",
-  //     price: 19.99,
-  //   ),
-  //   Order(
-  //     name: "Borgir",
-  //     description: 'Double patty',
-  //     imageAsset: "",
-  //     price: 24.99,
-  //   ),
-  // ];
-
   List<Order> orders = [];
 
   @override
@@ -76,138 +61,214 @@ class _ActiveOrderPageState extends State<ActiveOrderPage> {
     }
   }
 
-  void showOrderDetails(BuildContext context, Order order) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          height: 825, // Set your desired height
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Column(
-                  children: [
-                    Text('Order ID# ${order.orderid}'),
-                    Text(
-                      '${order.date}',
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
+  void showOrderDetails(BuildContext context, Order order) async {
+    try {
+      List<Widget> details = [];
+
+      showDialog(
+          context: context,
+          builder: (context) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          });
+
+      final results =
+          await CustomerOrderAPI().getorderdetail(order.orderid.toString());
+      final jsonData = json.encode(results['data']);
+
+      setState(() {
+        for (var data in json.decode(jsonData)) {
+          OrderDetails orderdetails = OrderDetails(
+              id: data['id'],
+              customerid: data['customerid'],
+              date: data['date'],
+              details: data['details'],
+              total: data['total'],
+              paymenttype: data['paymenttype'],
+              status: data['status']);
+
+          var orderitems = json.decode(orderdetails.details);
+
+          print(orderitems);
+
+          int index = 1;
+          for (var items in orderitems) {
+            print(items['items']);
+
+            var itemsdetails = json.encode(items['items']);
+
+            for (var item in json.decode(itemsdetails)) {
+              print(item);
+              double _price = double.parse(item['price']);
+              int _quantity = item['quantity'];
+              double quantity = _quantity.toDouble();
+              double total = _price * quantity;
+
+              details.add(
+                ListTile(
+                  leading: Text('$index# - $_quantity'),
+                  title: Text(item['name']),
+                  trailing: Text(
+                    '₱${total.toStringAsFixed(2)}',
+                    style: const TextStyle(
+                      color: Color.fromARGB(255, 0, 0, 0),
+                      fontWeight: FontWeight.w700,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(3.0),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12.0),
-                        child: Container(
-                          alignment: Alignment.center,
-                          width: 75,
-                          height: 23,
-                          color: Colors.green,
-                          child: const Center(
-                            child: Text(
-                              'Status',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 11.1,
+                  ),
+                ),
+              );
+
+              index++;
+            }
+          }
+        }
+      });
+
+      Navigator.of(context).pop();
+
+      showModalBottomSheet(
+        constraints: BoxConstraints(
+            minWidth: double.infinity, minHeight: double.maxFinite),
+        context: context,
+        builder: (BuildContext context) {
+          return SingleChildScrollView(
+            child: Container(
+              height: 600, // Set your desired height
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Order ID# ${order.orderid}',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w600),
+                        ),
+                        Text(
+                          '${order.date}',
+                          style: TextStyle(fontSize: 12, color: Colors.black),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(3.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12.0),
+                            child: Container(
+                              alignment: Alignment.center,
+                              width: 75,
+                              height: 23,
+                              color: Colors.green,
+                              child: Center(
+                                child: Text(
+                                  order.status,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 11.1,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20, bottom: 8),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12.0),
-                        child: Container(
-                          height: 190,
-                          color: Colors.grey.shade200,
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                ListTile(
-                                  leading: const Text('1x'),
-                                  title: Text(order.orderid.toString()),
-                                  trailing: Text(
-                                    '₱${order.total.toStringAsFixed(2)}',
-                                    style: const TextStyle(
-                                      color: Color.fromARGB(255, 0, 0, 0),
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 5, bottom: 8),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12.0),
+                            child: Container(
+                              height: 180,
+                              color: Colors.grey.shade200,
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  children: details,
                                 ),
-                                const Text('data'),
-                                const Text('data'),
-                              ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 13, bottom: 13),
-                      child: Divider(height: 3),
-                    ),
-                    const Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            'Subtotal',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                                fontWeight: FontWeight.normal,
-                                fontSize: 13,
-                                color: Colors.grey),
-                          ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 13, bottom: 13),
+                          child: Divider(height: 3),
                         ),
-                        SizedBox(width: 30),
-                        Text(
-                          '₱ total',
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 0, 0, 0),
-                            fontWeight: FontWeight.normal,
-                          ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Subtotal',
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 13,
+                                    color: Colors.white),
+                              ),
+                            ),
+                            SizedBox(width: 30),
+                            Text(
+                              '₱ ${order.total.toStringAsFixed(2)} total',
+                              style: TextStyle(
+                                color: Color.fromARGB(255, 0, 0, 0),
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 13, bottom: 13),
+                          child: Divider(height: 3),
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Payment Type:',
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 13,
+                                    color: Colors.white),
+                              ),
+                            ),
+                            SizedBox(width: 30),
+                            Text(
+                              order.paymenttype,
+                              style: TextStyle(
+                                color: Color.fromARGB(255, 0, 0, 0),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 13, bottom: 13),
-                      child: Divider(height: 3),
-                    ),
-                    const Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            'Payment Type:',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                                fontWeight: FontWeight.normal,
-                                fontSize: 13,
-                                color: Colors.grey),
-                          ),
-                        ),
-                        SizedBox(width: 30),
-                        Text(
-                          'Paymayuhh',
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 0, 0, 0),
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        );
-      },
-    );
+            ),
+          );
+        },
+      );
+    } catch (e) {
+      Navigator.of(context).pop();
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Error'),
+              content: Text('$e'),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('OK'))
+              ],
+            );
+          });
+    }
   }
 
   @override
@@ -354,6 +415,26 @@ class Order {
     required this.image,
     required this.orderid,
     required this.date,
+    required this.total,
+    required this.paymenttype,
+    required this.status,
+  });
+}
+
+class OrderDetails {
+  final int id;
+  final int customerid;
+  final String date;
+  final String details;
+  final int total;
+  final String paymenttype;
+  final String status;
+
+  OrderDetails({
+    required this.id,
+    required this.customerid,
+    required this.date,
+    required this.details,
     required this.total,
     required this.paymenttype,
     required this.status,

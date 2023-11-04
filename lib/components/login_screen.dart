@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:smallproject/api/customer.dart';
-import 'package:smallproject/components/dashboard_screen.dart';
-import 'package:smallproject/repository/database.dart';
+import 'package:uhordering/api/customer.dart';
+import 'package:uhordering/components/dashboard_screen.dart';
+import 'package:uhordering/repository/database.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -196,8 +196,8 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 5),
             Container(
               constraints: const BoxConstraints(
-                minWidth: 200.0,
-                maxWidth: 380.0,
+                minWidth: 220.0,
+                maxWidth: 280.0,
               ),
               child: TextField(
                 controller: _usernameController,
@@ -221,8 +221,8 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             Container(
               constraints: const BoxConstraints(
-                minWidth: 200.0,
-                maxWidth: 380.0,
+                minWidth: 220.0,
+                maxWidth: 280.0,
               ),
               child: TextField(
                 controller: _passwordController,
@@ -245,8 +245,8 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 20),
             Container(
                 constraints: const BoxConstraints(
-                  minWidth: 200.0,
-                  maxWidth: 380.0,
+                  minWidth: 220.0,
+                  maxWidth: 280.0,
                 ),
                 child: ElevatedButton.icon(
                   onPressed: () {
@@ -257,9 +257,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   label: const Text('Login'),
                   style: ButtonStyle(
                     minimumSize: MaterialStateProperty.all<Size>(
-                        Size(double.maxFinite, 50)),
+                        Size(220.0, 50)),
                     maximumSize: MaterialStateProperty.all<Size>(
-                        Size(double.maxFinite, 50)),
+                        Size(280.0, 50)),
                   ),
                 )),
             const SizedBox(height: 40),

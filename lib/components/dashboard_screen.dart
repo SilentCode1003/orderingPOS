@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
-import 'package:smallproject/api/customercredit.dart';
-import 'package:smallproject/components/activeorder.dart';
-import 'package:smallproject/components/product_listing_screen.dart';
-import 'package:smallproject/components/trackorder.dart';
-import 'package:smallproject/repository/database.dart';
+import 'package:uhordering/api/customercredit.dart';
+import 'package:uhordering/components/activeorder.dart';
+import 'package:uhordering/components/product_listing_screen.dart';
+import 'package:uhordering/components/trackorder.dart';
+import 'package:uhordering/repository/database.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 
 class Slide {
