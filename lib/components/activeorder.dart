@@ -275,7 +275,7 @@ class _ActiveOrderPageState extends State<ActiveOrderPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Order History'),
+        title: const Text('Active Order'),
         leading: IconButton(
             onPressed: () {
               Navigator.pushReplacementNamed(context, '/dashboard');
