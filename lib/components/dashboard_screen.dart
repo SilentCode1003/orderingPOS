@@ -229,14 +229,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ],
               ),
             ),
-            // ListTile(
-            //   leading: Icon(Icons.person_2_rounded),
-            //   title: const Text('Profile'),
-            //   onTap: () {
-            //     // Add your action when Settings is tapped
-            //     Navigator.pushReplacementNamed(context, '/profile');
-            //   },
-            // ),
+            ListTile(
+              leading: Icon(Icons.person_2_rounded),
+              title: const Text('Profile'),
+              onTap: () {
+                // Add your action when Settings is tapped
+                Navigator.pushReplacementNamed(context, '/profile');
+              },
+            ),
             ListTile(
               leading: const Icon(Icons.receipt_long),
               title: const Text('Orders'),

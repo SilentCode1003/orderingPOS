@@ -80,29 +80,30 @@ class _LoginScreenState extends State<LoginScreen> {
             }
           } else {
             if (jsonData.length != 2) {
-              for (var data in json.decode(jsonData)) {
-                await dh.insertItem({
-                  "customerid": data['id'],
-                  "customername":
-                      '${data['firstname']} ${data['middlename']} ${data['lastname']}',
-                  "contactnumber": data['contactnumber'],
-                  "gender": data['gender'],
-                  "address": data['address'],
-                }, 'customer');
+              // for (var data in json.decode(jsonData)) {
+              //   await dh.insertItem({
+              //     "customerid": data['id'],
+              //     "customername":
+              //         '${data['firstname']} ${data['middlename']} ${data['lastname']}',
+              //     "contactnumber": data['contactnumber'],
+              //     "gender": data['gender'],
+              //     "address": data['address'],
+              //     "email": data['email'],
+              //   }, 'customer');
 
-                setState(() {
-                  customerid = data['id'];
-                  customername =
-                      '${data['firstname']} ${data['middlename']} ${data['lastname']}';
-                });
-              }
+              //   setState(() {
+              //     customerid = data['id'];
+              //     customername =
+              //         '${data['firstname']} ${data['middlename']} ${data['lastname']}';
+              //   });
+              // }
 
-              List<Map<String, dynamic>> customerinfo =
-                  await db.query('customer');
-              for (var customer in customerinfo) {
-                print(
-                    '${customer['customerid']} ${customer['customername']} ${customer['contactnumber']} ${customer['gender']} ${customer['address']}');
-              }
+              // List<Map<String, dynamic>> customerinfo =
+              //     await db.query('customer');
+              // for (var customer in customerinfo) {
+              //   print(
+              //       '${customer['customerid']} ${customer['customername']} ${customer['contactnumber']} ${customer['gender']} ${customer['address']}');
+              // }
 
               _success();
             } else {}

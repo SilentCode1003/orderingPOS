@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:uhordering/components/activeorder.dart';
 import 'package:uhordering/components/orders_screen.dart';
+import 'package:uhordering/components/profile.dart';
 import 'package:uhordering/components/registrationpage.dart';
 import 'package:uhordering/components/trackorder.dart';
 import 'package:uhordering/repository/database.dart';
@@ -76,6 +77,7 @@ class MyApp extends StatelessWidget {
               totalPrices: {},
               productlist: [],
             ),
+             '/profile': (context) => const ProfilePage(),
       },
     );
   }

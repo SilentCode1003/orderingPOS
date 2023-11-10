@@ -17,7 +17,7 @@ class DatabaseHelper {
 
   Future<void> _createTables(Database db, int version) async {
     await db.execute(
-        'CREATE TABLE customer (customerid int, customername varchar(300), contactnumber varchar(13), gender varchar(7), address text)');
+        'CREATE TABLE customer (customerid int, customername varchar(300), contactnumber varchar(13), gender varchar(7), address text, email varchar(300))');
     print('done creating customer table');
   }
 

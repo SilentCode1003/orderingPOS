@@ -285,7 +285,12 @@ class _ActiveOrderPageState extends State<ActiveOrderPage> {
       body: Padding(
         padding: const EdgeInsets.all(5.0),
         child: Column(
-          children: <Widget>[
+          children:  <Widget>[
+             if (orders.isEmpty)
+              const Text(
+                'No Orders',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+              ),
             Expanded(
               child: ListView.builder(
                 itemCount: orders.length,
