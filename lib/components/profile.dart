@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:sqflite_common/sqlite_api.dart';
+import 'package:uhordering/api/customer.dart';
 import 'package:uhordering/components/dashboard_screen.dart';
 import 'package:uhordering/repository/database.dart';
 import 'package:uhordering/repository/geolocator.dart';
@@ -19,13 +21,10 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final TextEditingController firstNameController = TextEditingController();
-  final TextEditingController middleNameController = TextEditingController();
-  final TextEditingController lastNameController = TextEditingController();
   final TextEditingController contactNumberController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
 
-  String? gender;
+  String gender = '';
 
   ZoomLevel zoomLevel = ZoomLevel(17.5);
   MapController mapController = MapController();
@@ -35,6 +34,10 @@ class _ProfilePageState extends State<ProfilePage> {
   double _longitude = 0;
   LatLng activelocation = LatLng(0, 0);
   LatLng manuallySelectedLocation = LatLng(0, 0);
+
+  int customerid = 0;
+  String fullname = '';
+  String locationregistered = '';
 
   final StreamController<LatLng> _streamController = StreamController<LatLng>();
 
@@ -52,6 +55,7 @@ class _ProfilePageState extends State<ProfilePage> {
         _latitude = latitude;
         _longitude = longitude;
         activelocation = LatLng(latitude, longitude);
+        manuallySelectedLocation = LatLng(latitude, longitude);
       });
 
       _centerMapToDefaultLocation(activelocation);
@@ -76,8 +80,14 @@ class _ProfilePageState extends State<ProfilePage> {
 
       List<Map<String, dynamic>> customerinfo = await db.query('customer');
       customerinfo.forEach((customer) {
+        print(customer);
         setState(() {
+          customerid = customer['customerid'];
           contactNumberController.text = customer['contactnumber'];
+          emailController.text = customer['email'];
+          fullname = customer['customername'];
+          gender = customer['gender'];
+          locationregistered = customer['address'];
         });
       });
     } catch (e) {
@@ -275,6 +285,67 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
+  Future<void> _update(contact, email, address) async {
+    try {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          });
+
+      final results = await CustomerAPI()
+          .updatecustomer(contact, email, address, customerid.toString());
+      // final jsonData = json.encode(results['data']);
+
+      Navigator.of(context).pop();
+
+      if (results['msg'] == 'success') {
+        Map<String, dynamic> customer = {
+          "customerid": customerid,
+          "customername": fullname,
+          "contactnumber": contact,
+          "gender": gender,
+          "address": address,
+          "email": email,
+        };
+        dh.updateItem(customer, 'customer', 'customerid=?', customerid);
+
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Success'),
+                content: Text('Updated info successfully submitted!'),
+                actions: [
+                  TextButton(
+                      onPressed: () =>
+                          Navigator.pushReplacementNamed(context, '/profile'),
+                      child: const Text('OK'))
+                ],
+              );
+            });
+      }
+    } catch (e) {
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Error'),
+              content: Text('$e'),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('OK'))
+              ],
+            );
+          });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -301,7 +372,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   TextField(
-                    controller: firstNameController,
+                    controller: contactNumberController,
                     keyboardType: TextInputType.number,
                     inputFormatters: [
                       FilteringTextInputFormatter.deny(RegExp(r'[a-zA-Z]')),
@@ -325,7 +396,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     height: 10,
                   ),
                   TextField(
-                    controller: firstNameController,
+                    controller: emailController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: const InputDecoration(
                       filled: true,
@@ -342,80 +413,109 @@ class _ProfilePageState extends State<ProfilePage> {
                       prefixIcon: Icon(Icons.email),
                     ),
                   ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    height: 60,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          _getcurrentaddress();
-                        },
-                        child: const Text('UPDATE ADDRESS')),
-                  ),
+                  // SizedBox(
+                  //   height: 10,
+                  // ),
+                  // Container(
+                  //   height: 60,
+                  //   child: ElevatedButton(
+                  //       onPressed: () {
+                  //         _getcurrentaddress();
+                  //       },
+                  //       child: const Text('UPDATE ADDRESS')),
+                  // ),
                   SizedBox(
                     height: 10,
                   ),
                   Container(
                     height: 260,
-                    child: FlutterMap(
-                      mapController: mapController,
-                      options: MapOptions(
-                        center: activelocation,
-                        zoom: zoomLevel.level,
-                        // onTap: (point, latlng) {},
-                      ),
-                      children: [
-                        TileLayer(
-                          urlTemplate:
-                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        ),
-                        MarkerLayer(
-                          markers: [
-                            Marker(
-                              width: 80.0,
-                              height: 80.0,
-                              point: activelocation,
-                              child: Icon(
-                                Icons.location_pin,
-                                color: Colors.red,
-                                size: 40.0,
-                              ),
+                    child: StreamBuilder<Object>(
+                        stream: _streamController.stream,
+                        builder: (context, snapshot) {
+                          return FlutterMap(
+                            mapController: mapController,
+                            options: MapOptions(
+                              center: activelocation,
+                              zoom: zoomLevel.level,
+                              onTap: (point, latlng) {
+                                _selectLocation(latlng);
+                              },
                             ),
-                            // Marker(
-                            //     point: activelocation,
-                            //     child: const Icon(
-                            //       Icons.location_pin,
-                            //       color: Colors.red,
-                            //       size: 40.0,
-                            //     ))
-                            // Marker(
-                            //   width: 80.0,
-                            //   height: 80.0,
-                            //   point: activelocation,
-                            //   builder: (context) => const Icon(
-                            //     Icons.location_pin,
-                            //     color: Colors.red,
-                            //     size: 40.0,
-                            //   ),
-                            // ),
-                          ],
-                        ),
-                      ],
-                    ),
+                            children: [
+                              TileLayer(
+                                urlTemplate:
+                                    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                              ),
+                              MarkerLayer(
+                                markers: [
+                                  Marker(
+                                    width: 80.0,
+                                    height: 80.0,
+                                    point: manuallySelectedLocation,
+                                    child: Icon(
+                                      Icons.location_pin,
+                                      color: Colors.red,
+                                      size: 40.0,
+                                    ),
+                                  ),
+                                  // Marker(
+                                  //     point: activelocation,
+                                  //     child: const Icon(
+                                  //       Icons.location_pin,
+                                  //       color: Colors.red,
+                                  //       size: 40.0,
+                                  //     ))
+                                  // Marker(
+                                  //   width: 80.0,
+                                  //   height: 80.0,
+                                  //   point: activelocation,
+                                  //   builder: (context) => const Icon(
+                                  //     Icons.location_pin,
+                                  //     color: Colors.red,
+                                  //     size: 40.0,
+                                  //   ),
+                                  // ),
+                                ],
+                              ),
+                            ],
+                          );
+                        }),
                   ),
                   SizedBox(
                     height: 5,
                   ),
-                  Text('Current Address: $_locationname')
+                  Text(
+                    'Current Address: $_locationname',
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    'Registered Address: $locationregistered',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white),
+                  )
                 ]),
           ),
         ),
         bottomNavigationBar: Container(
           height: 80,
           child: BottomAppBar(
-            child:
-                ElevatedButton(onPressed: () {}, child: const Text('UPDATE')),
+            child: ElevatedButton(
+                onPressed: () {
+                  String contact = contactNumberController.text;
+                  String email = emailController.text;
+                  String address = _locationname;
+
+                  print('test');
+
+                  _update(contact, email, address);
+                },
+                child: const Text('UPDATE')),
           ),
         ),
       ),

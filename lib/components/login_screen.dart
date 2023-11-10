@@ -65,45 +65,54 @@ class _LoginScreenState extends State<LoginScreen> {
               });
         } else {
           if (customerinfo.isNotEmpty) {
-            for (var customer in customerinfo) {
-              // // String name = pos['posid'];
-              // print('${customer}');
-              // dh.updateItem(
-              //     customer, 'customer', 'customerid=?', customer['storeid']);
-              // // Process data
+            for (var data in json.decode(jsonData)) {
+              // String name = pos['posid'];
+              Map<String, dynamic> customer = {
+                "customerid": data['id'],
+                "customername":
+                    '${data['firstname']} ${data['middlename']} ${data['lastname']}',
+                "contactnumber": data['contactnumber'],
+                "gender": data['gender'],
+                "address": data['address'],
+                "email": data['email'],
+              };
+              print('${data}');
+              dh.updateItem(customer, 'customer', 'customerid=?', data['id']);
+              // Process data
 
               // setState(() {
               //   customername = '${customer['customername']}';
               //   customerid = customer['customerid'];
               // });
+
+              List<Map<String, dynamic>> customerinfo =
+                  await db.query('customer');
+              for (var customer in customerinfo) {
+                print(
+                    '${customer['customerid']} ${customer['customername']} ${customer['contactnumber']} ${customer['gender']} ${customer['address']}');
+              }
               _success();
             }
           } else {
             if (jsonData.length != 2) {
-              // for (var data in json.decode(jsonData)) {
-              //   await dh.insertItem({
-              //     "customerid": data['id'],
-              //     "customername":
-              //         '${data['firstname']} ${data['middlename']} ${data['lastname']}',
-              //     "contactnumber": data['contactnumber'],
-              //     "gender": data['gender'],
-              //     "address": data['address'],
-              //     "email": data['email'],
-              //   }, 'customer');
+              for (var data in json.decode(jsonData)) {
+                await dh.insertItem({
+                  "customerid": data['id'],
+                  "customername":
+                      '${data['firstname']} ${data['middlename']} ${data['lastname']}',
+                  "contactnumber": data['contactnumber'],
+                  "gender": data['gender'],
+                  "address": data['address'],
+                  "email": data['email'],
+                }, 'customer');
 
-              //   setState(() {
-              //     customerid = data['id'];
-              //     customername =
-              //         '${data['firstname']} ${data['middlename']} ${data['lastname']}';
-              //   });
-              // }
-
-              // List<Map<String, dynamic>> customerinfo =
-              //     await db.query('customer');
-              // for (var customer in customerinfo) {
-              //   print(
-              //       '${customer['customerid']} ${customer['customername']} ${customer['contactnumber']} ${customer['gender']} ${customer['address']}');
-              // }
+                //   setState(() {
+                //     customerid = data['id'];
+                //     customername =
+                //         '${data['firstname']} ${data['middlename']} ${data['lastname']}';
+                //   });
+                // }
+              }
 
               _success();
             } else {}
@@ -257,10 +266,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   icon: const Icon(Icons.login),
                   label: const Text('Login'),
                   style: ButtonStyle(
-                    minimumSize: MaterialStateProperty.all<Size>(
-                        Size(220.0, 50)),
-                    maximumSize: MaterialStateProperty.all<Size>(
-                        Size(280.0, 50)),
+                    minimumSize:
+                        MaterialStateProperty.all<Size>(Size(220.0, 50)),
+                    maximumSize:
+                        MaterialStateProperty.all<Size>(Size(280.0, 50)),
                   ),
                 )),
             const SizedBox(height: 40),

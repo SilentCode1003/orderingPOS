@@ -9,7 +9,7 @@ class CustomerAPI {
     String middlename,
     String lastname,
     String contactnumber,
-     String email,
+    String email,
     String gender,
     String address,
     String username,
@@ -59,6 +59,27 @@ class CustomerAPI {
   Future<Map<String, dynamic>> getCustomerInfo() async {
     final url = Uri.parse('${Config.apiUrl}${Config.registrationAPI}');
     final response = await http.post(url);
+
+    final responseData = json.decode(response.body);
+    final status = response.statusCode;
+    final msg = responseData['msg'];
+    final results = responseData['data'];
+
+    Map<String, dynamic> data = {};
+    data = {'msg': msg, 'status': status, 'data': results};
+
+    return data;
+  }
+
+  Future<Map<String, dynamic>> updatecustomer(
+      String contact, String email, String address, String customerid) async {
+    final url = Uri.parse('${Config.apiUrl}${Config.updateCustomerAPI}');
+    final response = await http.post(url, body: {
+      'contact': contact,
+      'email': email,
+      'address': address,
+      'customerid': customerid
+    });
 
     final responseData = json.decode(response.body);
     final status = response.statusCode;
