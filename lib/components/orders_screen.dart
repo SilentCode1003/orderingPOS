@@ -484,40 +484,34 @@ class _OrderScreenState extends State<OrderScreen> {
             elevation: 3,
             margin: const EdgeInsets.all(5),
             child: ListTile(
-              title: Text('$product (QTY $quantity)'),
-              subtitle: Text('Total Price: \₱${totalPrice.toStringAsFixed(2)}'),
+              title: Text('$product - $quantity'),
+              subtitle: Text('Total Price:\₱${totalPrice.toStringAsFixed(2)}'),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        widget.addToCart(product);
-                      });
-                    },
-                    child: const Icon(Icons.plus_one),
-                  ),
-                  const SizedBox(
-                      width: 5), // Add some spacing between the buttons
-                  ElevatedButton(
-                    onPressed: () {
-                      widget.deductToCart(product);
-                      setState(() {});
-                    },
-                    child: const Icon(Icons.exposure_minus_1),
-                  ),
-                  const SizedBox(
-                      width: 16), // Add some spacing between the buttons
-                  ElevatedButton.icon(
+                  const SizedBox(width: 5),
+                  IconButton(
+                      onPressed: () {
+                        setState(() {
+                          widget.addToCart(product);
+                        });
+                      },
+                      icon: Icon(Icons.plus_one)),
+                  const SizedBox(width: 5),
+                  IconButton(
+                      onPressed: () {
+                        widget.deductToCart(product);
+                        setState(() {});
+                      },
+                      icon: Icon(Icons.exposure_minus_1)),
+                  const SizedBox(width: 5),
+                  IconButton(
                       onPressed: () {
                         widget.removeToCart(product);
                         setState(() {});
                       },
-                      icon: const Icon(
-                        Icons.delete,
-                        color: Colors.white,
-                      ),
-                      label: const Text('REMOVE')),
+                      icon: Icon(
+                          Icons.delete)) // Add some spacing between the buttons
                 ],
               ),
             ),

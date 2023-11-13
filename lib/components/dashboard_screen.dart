@@ -8,6 +8,7 @@ import 'package:uhordering/components/product_listing_screen.dart';
 import 'package:uhordering/components/trackorder.dart';
 import 'package:uhordering/repository/database.dart';
 import 'package:sqflite_common/sqlite_api.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Slide {
   Slide({
@@ -93,6 +94,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     _getcredit();
     super.initState();
+  }
+
+  Future<void> _openFacebookApp() async {
+    const facebookAppUrl = "fb://UrbanHideoutCafe?mibextid=ZbWKwL"; // Facebook app custom URL scheme
+
+    if (await canLaunch(facebookAppUrl)) {
+      await launch(facebookAppUrl);
+    } else {
+      // Handle error, for example, show an error dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('Could not open Facebook app.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   Future<void> _getcredit() async {
@@ -242,15 +270,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
               title: const Text('Orders'),
               onTap: () {
                 // Add your action when Settings is tapped
-               Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ActiveOrderPage(
-                            customerid: customerid,
-                            customername: customername,
-                          ),
-                        ),
-                      );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ActiveOrderPage(
+                      customerid: customerid,
+                      customername: customername,
+                    ),
+                  ),
+                );
               },
             ),
             ListTile(
@@ -258,16 +286,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
               title: const Text('History'),
               onTap: () {
                 // Add your action when Settings is tapped
-               Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => TrackOrderPage(
-                            customerid: customerid,
-                            customername: customername,
-                          ),
-                        ),
-                      );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TrackOrderPage(
+                      customerid: customerid,
+                      customername: customername,
+                    ),
+                  ),
+                );
               },
+            ),
+            SizedBox(
+              height: 120,
             ),
             ListTile(
               leading: Icon(Icons.logout),
@@ -275,6 +306,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
               onTap: () {
                 // Add your action when Settings is tapped
                 Navigator.pushReplacementNamed(context, '/login');
+              },
+            ),
+            Divider(),
+            ListTile(
+              leading: Icon(Icons.facebook),
+              title: const Text('Facebook'),
+              onTap: () {
+                // Add your action when Settings is tapped
+                // Navigator.pushReplacementNamed(context, '/login');
+                _openFacebookApp();
               },
             ),
           ],
