@@ -18,4 +18,5 @@ class Config {
   static const String activeOrederAPI = 'customerorder/getactiveorder';
   static const String getOrderDetailAPI = 'customerorder/getorderdetail';
   static const String updateCustomerAPI = 'customer/update';
+  static const String getBalanceHistoryAPI = 'balancehistory/getbalance';
 }

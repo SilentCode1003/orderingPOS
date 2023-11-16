@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:uhordering/api/customercredit.dart';
 import 'package:uhordering/components/activeorder.dart';
+import 'package:uhordering/components/balancehistory.dart';
 import 'package:uhordering/components/product_listing_screen.dart';
 import 'package:uhordering/components/trackorder.dart';
+import 'package:uhordering/repository/customhelper.dart';
 import 'package:uhordering/repository/database.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -85,6 +87,7 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  Helper helper = Helper();
   final DatabaseHelper dh = DatabaseHelper();
   String customername = '';
   int customerid = 0;
@@ -97,7 +100,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _openFacebookApp() async {
-    const facebookAppUrl = "fb://UrbanHideoutCafe?mibextid=ZbWKwL"; // Facebook app custom URL scheme
+    const facebookAppUrl =
+        "fb://UrbanHideoutCafe?mibextid=ZbWKwL"; // Facebook app custom URL scheme
 
     if (await canLaunch(facebookAppUrl)) {
       await launch(facebookAppUrl);
@@ -204,7 +208,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Column(
               mainAxisAlignment: MainAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
-              children: [Text('\₱ ${credit.toStringAsFixed(2)}')],
+              children: [Text(helper.formatAsCurrency(credit))],
             )
           ],
         ),
@@ -249,7 +253,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         style: TextStyle(fontSize: 16, color: Colors.white),
                       ),
                       Text(
-                        '\₱ ${credit.toStringAsFixed(2)}',
+                        helper.formatAsCurrency(credit),
                         style: TextStyle(fontSize: 16, color: Colors.white),
                       ),
                     ],
@@ -290,6 +294,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => TrackOrderPage(
+                      customerid: customerid,
+                      customername: customername,
+                    ),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.wallet),
+              title: const Text('E-wallet'),
+              onTap: () {
+                // Add your action when Settings is tapped
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => WalletHistoryPage(
                       customerid: customerid,
                       customername: customername,
                     ),
