@@ -4,10 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:uhordering/api/customercredit.dart';
 import 'package:uhordering/components/activeorder.dart';
+import 'package:uhordering/components/balancehistory.dart';
 import 'package:uhordering/components/product_listing_screen.dart';
 import 'package:uhordering/components/trackorder.dart';
+import 'package:uhordering/repository/customhelper.dart';
 import 'package:uhordering/repository/database.dart';
 import 'package:sqflite_common/sqlite_api.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Slide {
   Slide({
@@ -84,6 +87,7 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  Helper helper = Helper();
   final DatabaseHelper dh = DatabaseHelper();
   String customername = '';
   int customerid = 0;
@@ -93,6 +97,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     _getcredit();
     super.initState();
+  }
+
+  Future<void> _openFacebookApp() async {
+    const facebookAppUrl =
+        "fb://UrbanHideoutCafe?mibextid=ZbWKwL"; // Facebook app custom URL scheme
+
+    if (await canLaunch(facebookAppUrl)) {
+      await launch(facebookAppUrl);
+    } else {
+      // Handle error, for example, show an error dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('Could not open Facebook app.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   Future<void> _getcredit() async {
@@ -176,7 +208,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Column(
               mainAxisAlignment: MainAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
-              children: [Text('\₱ ${credit.toStringAsFixed(2)}')],
+              children: [Text(helper.formatAsCurrency(credit))],
             )
           ],
         ),
@@ -221,7 +253,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         style: TextStyle(fontSize: 16, color: Colors.white),
                       ),
                       Text(
-                        '\₱ ${credit.toStringAsFixed(2)}',
+                        helper.formatAsCurrency(credit),
                         style: TextStyle(fontSize: 16, color: Colors.white),
                       ),
                     ],
@@ -242,15 +274,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
               title: const Text('Orders'),
               onTap: () {
                 // Add your action when Settings is tapped
-               Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ActiveOrderPage(
-                            customerid: customerid,
-                            customername: customername,
-                          ),
-                        ),
-                      );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ActiveOrderPage(
+                      customerid: customerid,
+                      customername: customername,
+                    ),
+                  ),
+                );
               },
             ),
             ListTile(
@@ -258,16 +290,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
               title: const Text('History'),
               onTap: () {
                 // Add your action when Settings is tapped
-               Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => TrackOrderPage(
-                            customerid: customerid,
-                            customername: customername,
-                          ),
-                        ),
-                      );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TrackOrderPage(
+                      customerid: customerid,
+                      customername: customername,
+                    ),
+                  ),
+                );
               },
+            ),
+            ListTile(
+              leading: const Icon(Icons.wallet),
+              title: const Text('E-wallet'),
+              onTap: () {
+                // Add your action when Settings is tapped
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => WalletHistoryPage(
+                      customerid: customerid,
+                      customername: customername,
+                    ),
+                  ),
+                );
+              },
+            ),
+            SizedBox(
+              height: 120,
             ),
             ListTile(
               leading: Icon(Icons.logout),
@@ -275,6 +326,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
               onTap: () {
                 // Add your action when Settings is tapped
                 Navigator.pushReplacementNamed(context, '/login');
+              },
+            ),
+            Divider(),
+            ListTile(
+              leading: Icon(Icons.facebook),
+              title: const Text('Facebook'),
+              onTap: () {
+                // Add your action when Settings is tapped
+                // Navigator.pushReplacementNamed(context, '/login');
+                _openFacebookApp();
               },
             ),
           ],
