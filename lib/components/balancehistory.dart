@@ -47,7 +47,8 @@ class _WalletHistoryPageState extends State<WalletHistoryPage> {
         transactions = List<Widget>.generate(
             balance.length,
             (index) => ListTile(
-                  leading: Icon(Icons.receipt_long),
+                  tileColor: Colors.white,
+                  leading: const Icon(Icons.receipt_long),
                   title: Text(
                     'TXN#: ${balance[index].historyid.toString().padLeft(9, '0')}',
                     style: const TextStyle(
@@ -62,21 +63,20 @@ class _WalletHistoryPageState extends State<WalletHistoryPage> {
                             style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.white),
+                                ),
                           )
                         ],
                       ),
                     ],
                   ),
-                  trailing: Text(
-                    helper.formatAsCurrency(balance[index].amount),
-                    style: const TextStyle(
+                  trailing: Text(helper.formatAsCurrency(balance[index].amount),
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: Colors.white),
-                  ),
-                  tileColor:
-                      (balance[index].amount > 0) ? Colors.green : Colors.red.shade900,
+                        color: (balance[index].amount > 0)
+                            ? Colors.green
+                            : Colors.red,
+                      )),
                 ));
       });
     } catch (e) {
@@ -107,6 +107,7 @@ class _WalletHistoryPageState extends State<WalletHistoryPage> {
         child: Column(
           children: transactions,
         ),
+        
       ),
     );
   }
