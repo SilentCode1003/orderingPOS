@@ -2,12 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:uhordering/api/customerorder.dart';
 import 'package:uhordering/api/payments.dart';
 import 'package:uhordering/components/product_listing_screen.dart';
+import 'package:uhordering/main.dart';
 import 'package:uhordering/repository/geolocator.dart';
 import 'package:geodesy/geodesy.dart';
 
@@ -180,6 +182,25 @@ class _OrderScreenState extends State<OrderScreen> {
     }
   }
 
+  Future<void> showNotification() async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'your_channel_id',
+      'your_channel_name',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      'Notification Title',
+      'This is the notification body',
+      platformChannelSpecifics,
+      payload: 'item x',
+    );
+  }
+
   Future<void> _order() async {
     try {
       await _getCurrentLocation();
@@ -189,7 +210,7 @@ class _OrderScreenState extends State<OrderScreen> {
         int? quantity = widget.cart[product];
         Product? productData = widget.productlist.firstWhere(
           (p) => p.name == product,
-          orElse: () => Product("Product Not Found", 0.0, ""),
+          orElse: () => Product("Product Not Found", 0.0, "", 0),
         );
 
         double totalPrice = productData.price * quantity!;
@@ -474,7 +495,7 @@ class _OrderScreenState extends State<OrderScreen> {
         var quantity = widget.cart[product];
         Product productData = widget.productlist.firstWhere(
           (p) => p.name == product,
-          orElse: () => Product("Product Not Found", 0.0, ""),
+          orElse: () => Product("Product Not Found", 0.0, "", 0),
         );
 
         if (productData != null) {
@@ -560,16 +581,15 @@ class _OrderScreenState extends State<OrderScreen> {
                   minWidth: 200.0,
                   maxWidth: 380.0,
                 ),
-                child: ElevatedButton.icon(
+                child: ElevatedButton(
                   onPressed: () {
                     _payment();
                   },
-                  icon: const Icon(Icons.paid),
-                  label: const Text('Review Payment & Address'),
                   style: ButtonStyle(
                     minimumSize: MaterialStateProperty.all<Size>(Size(150, 50)),
                     maximumSize: MaterialStateProperty.all<Size>(Size(150, 50)),
                   ),
+                  child: const Text('Proceed'),
                 )),
           ),
         ],

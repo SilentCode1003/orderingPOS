@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:uhordering/components/activeorder.dart';
-import 'package:uhordering/components/notification.dart';
 import 'package:uhordering/components/orders_screen.dart';
 import 'package:uhordering/components/profile.dart';
 import 'package:uhordering/components/registrationpage.dart';
@@ -13,10 +13,17 @@ import 'components/login_screen.dart';
 import 'components/dashboard_screen.dart';
 import 'components/product_listing_screen.dart';
 
-void main() {
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+Future<void> main() async {
   if (Platform.isAndroid) {
     DatabaseHelper dh = DatabaseHelper();
     dh.database;
+
+    WidgetsFlutterBinding.ensureInitialized();
+
+    // await initNotifications();
   } else if (Platform.isWindows) {
     // Initialize the sqflite FFI bindings
     sqfliteFfiInit();
@@ -38,6 +45,24 @@ void main() {
     });
   }
   runApp(MyApp());
+}
+
+Future<void> initNotifications() async {
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('app_icon');
+
+  const InitializationSettings initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid);
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+}
+
+Future<void> onDidReceiveLocalNotification(
+    int id, String? title, String? body, String? payload) async {
+  // Handle when a notification is tapped while the app is in the foreground
+}
+
+Future<void> onSelectNotification(String? payload) async {
+  // Handle when a notification is tapped
 }
 
 class MyApp extends StatelessWidget {
@@ -79,7 +104,6 @@ class MyApp extends StatelessWidget {
               productlist: [],
             ),
         '/profile': (context) => const ProfilePage(),
-        '/notification': (context) =>  NotificationPage(),
       },
     );
   }

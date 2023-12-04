@@ -51,8 +51,10 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
 
     setState(() {
       for (var data in json.decode(jsonData)) {
-        productlist.add(Product(
-            data['description'], data['price'].toDouble(), data['image']));
+        print(data);
+        if (data['quantity'] > 0)
+          productlist.add(Product(data['description'], data['price'].toDouble(),
+              data['image'], data['quantity']));
       }
     });
   }
@@ -178,7 +180,14 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                   Expanded(
                     child: ListTile(
                       title: Text(product.name),
-                      subtitle: Text('\$${product.price.toStringAsFixed(2)}'),
+                      subtitle: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('\$${product.price.toStringAsFixed(2)}'),
+                          Text('Available: ${product.quantity.toString()}'),
+                        ],
+                      ),
                     ),
                   ),
                   ElevatedButton(
@@ -202,8 +211,9 @@ class Product {
   final String name;
   final double price;
   final String imageAsset;
+  final int quantity;
 
-  Product(this.name, this.price, this.imageAsset);
+  Product(this.name, this.price, this.imageAsset, this.quantity);
 }
 
 // final List<Product> products = [
