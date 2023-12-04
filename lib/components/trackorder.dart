@@ -152,8 +152,8 @@ class _TrackOrderPageState extends State<TrackOrderPage> {
 
             for (var item in json.decode(itemsdetails)) {
               print(item);
-              double _price = double.parse(item['price']);
               int _quantity = item['quantity'];
+              double _price = double.parse(item['price']) / _quantity;
               double quantity = _quantity.toDouble();
               double total = _price * quantity;
 

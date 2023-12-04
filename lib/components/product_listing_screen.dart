@@ -51,7 +51,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
 
     setState(() {
       for (var data in json.decode(jsonData)) {
-        print(data);
+        // print(data);
         if (data['quantity'] > 0)
           productlist.add(Product(data['description'], data['price'].toDouble(),
               data['image'], data['quantity']));
@@ -71,16 +71,42 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
 
   void addToCart(String product) {
     setState(() {
-      if (cart.containsKey(product)) {
-        cart[product] = (cart[product] ?? 0) + 1;
-        totalPrices[product] = (totalPrices[product] ?? 0) +
-            productlist.firstWhere((p) => p.name == product).price;
+      int current_quantity =
+          productlist.firstWhere((p) => p.name == product).quantity;
+      int cartitem_quatity = (cart[product] ?? 0) + 1;
+
+      if (cartitem_quatity <= current_quantity) {
+        print(cart[product]);
+
+        if (cart.containsKey(product)) {
+          cart[product] = (cart[product] ?? 0) + 1;
+
+          totalPrices[product] = (totalPrices[product] ?? 0) +
+              productlist.firstWhere((p) => p.name == product).price;
+        } else {
+          cart[product] = 1;
+          totalPrices[product] =
+              productlist.firstWhere((p) => p.name == product).price;
+        }
+        updateTotalCartItems(); // Update the total cart items
       } else {
-        cart[product] = 1;
-        totalPrices[product] =
-            productlist.firstWhere((p) => p.name == product).price;
+        print('Sorry $product availability is $current_quantity');
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text('Availability'),
+                content: Text('Sorry "$product" availability is $current_quantity'),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('OK'))
+                ],
+              );
+            });
       }
-      updateTotalCartItems(); // Update the total cart items
     });
   }
 

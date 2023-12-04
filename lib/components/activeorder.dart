@@ -100,8 +100,9 @@ class _ActiveOrderPageState extends State<ActiveOrderPage> {
 
             for (var item in json.decode(itemsdetails)) {
               print(item);
-              double _price = double.parse(item['price']);
+
               int _quantity = item['quantity'];
+              double _price = double.parse(item['price']) / _quantity;
               double quantity = _quantity.toDouble();
               double total = _price * quantity;
 
@@ -285,8 +286,8 @@ class _ActiveOrderPageState extends State<ActiveOrderPage> {
       body: Padding(
         padding: const EdgeInsets.all(5.0),
         child: Column(
-          children:  <Widget>[
-             if (orders.isEmpty)
+          children: <Widget>[
+            if (orders.isEmpty)
               const Text(
                 'No Orders',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
